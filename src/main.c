@@ -3,7 +3,7 @@
 
 
 static int x, w, y, h, xs, ys;
-
+/* Test */
 
 void test_init(void) {
   x  = 28;// 76;
