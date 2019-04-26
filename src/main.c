@@ -5,14 +5,12 @@
 static int x, w, y, h, xs, ys;
 
 void test_init(void) {
-  x  = 28;// 76;
+  x  = 28; 
   w  = 8;
-  y  = 28;// 60;
+  y  = 28;
   h  = 8;
   xs = 1;
   ys = 1;
-
-  printf("Sugi Init!\n\r");
 }
 
 
@@ -52,15 +50,15 @@ void test_draw() {
     sugi_gfx_pset(i, 0,   7);
     sugi_gfx_pset(i, 63,  7);
     sugi_gfx_pset(i, 127, 7);
-    sugi_gfx_pset(i, 159, 7);
   }
 
-  for (int _x = x; _x < x + w; _x++)
-    for (int _y = y; _y < y + h; _y++)
-      sugi_gfx_pset(_x + 2, _y + 2, 15);
-  for (int _x = x; _x < x + w; _x++)
-    for (int _y = y; _y < y + h; _y++)
-      sugi_gfx_pset(_x, _y, 7);
+  
+  sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 15);
+  sugi_gfx_rect(x, y, x + w, y + h, 1, 7);
+
+  sugi_gfx_line(64,64,128,92,7);
+  sugi_gfx_rect(32,16,92,48,0,1);
+  sugi_gfx_rect(40,24,84,40,1,2);
 }
 
 

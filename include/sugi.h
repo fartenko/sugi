@@ -15,15 +15,15 @@
 
 /* CONFIG VALUES **************************************************/
 enum config {
-  SUGI_SCREEN_WIDTH  = 512,
-  SUGI_SCREEN_HEIGHT = 384,
-  SUGI_RENDER_WIDTH  = 224,
-  SUGI_RENDER_HEIGHT = 160,
+  SUGI_SCREEN_WIDTH  = 480,
+  SUGI_SCREEN_HEIGHT = 384, // ^               ^       ^
+  SUGI_RENDER_WIDTH  = 160, // 160, // 224, // 224, // 224,
+  SUGI_RENDER_HEIGHT = 128, // 128, // 144, // 160, // 128,
   SUGI_USE_VSYNC     = 1,
 
-  GL_MAJOR_VERSION   = 3,
-  GL_MINOR_VERSION   = 2,
-  GL_USE_VSYNC       = 1,
+  //GL_MAJOR_VERSION   = 3,
+  //GL_MINOR_VERSION   = 2,
+  //GL_USE_VSYNC       = 1,
 };
 
 
@@ -39,7 +39,11 @@ uint8_t  sugi_draw_buffer[SUGI_RENDER_WIDTH * SUGI_RENDER_HEIGHT];
 uint8_t *sugi_draw_buffer_ptr;
 
 /* Sugi RAM */
-// 0 - 0x3000 screen data...
+// 0x0000 - 0x27FF screen data (4bit color)
+// 0x2800 - 0x2FFF some other variables
+// 0x3000 - 0x4FFF spritesheet 0-255
+// 0x5000 - 0x9FFF map 160x128
+// 0xA000 - ......
 
 uint8_t sugi_display_mode;
 
@@ -91,8 +95,10 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in);
 int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out);
 void   sugi_gfx_camera(int32_t x, int32_t y);
 void   sugi_gfx_clear(uint8_t c);
-
-
+void   sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in);
+void   sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
+void   sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in);
+void   sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in);
 
 /* SHADERS ********************************************************/
 const char *vert_shader_src[];
