@@ -1,5 +1,5 @@
-#ifndef palette_h
-#define palette_h
+#ifndef PALETTE_H
+#define PALETTE_H
 
 #define SUGI_COLOR00 "0.0, 0.0, 0.0, 1.0"
 #define SUGI_COLOR01 "0.0, 0.0, 1.0, 1.0"

@@ -22,22 +22,22 @@ rm = rm -r -f
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
 	@$(LINKER) $(OBJECTS) $(LFLAGS) -o $@
-	@echo "Linking complete!"
+	@echo "LINKER\t$(@)"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@echo "CC\t"$<
 
 run:
 	@$(BINDIR)/$(TARGET)
 
 clean: 
 	@$(rm) $(OBJECTS)
-	@echo "Cleanup complete!"
+	@echo "$(rm) $(OBJECTS)"
 
 remove:
 	@$(rm) $(BINDIR)/$(TARGET)
-	@echo "Target removed!"
+	@echo "$(rm) $(BINDIR)/$(TARGET)"
 
 
 # Old version

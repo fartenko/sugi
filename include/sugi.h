@@ -20,6 +20,10 @@ enum config {
   SUGI_RENDER_WIDTH  = 224,
   SUGI_RENDER_HEIGHT = 160,
   SUGI_USE_VSYNC     = 1,
+
+  GL_MAJOR_VERSION   = 3,
+  GL_MINOR_VERSION   = 2,
+  GL_USE_VSYNC       = 1,
 };
 
 
@@ -44,7 +48,7 @@ static const uint32_t sugi_memory_screen_size = // = 0x2800;
 
 //                   0x10000   // 0x0000 -> 0xFFFF   64kB
 //                   0x18000   // 0x0000 -> 0x17FFF  96kB 
-uint8_t  sugi_memory[0xF0000]; // 0x0000 -> 0x1FFFF 128kB
+uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
 
@@ -61,18 +65,25 @@ void sugi_set_init(void (*f)(void));   /* Sets custom Init func */
 void sugi_set_update(void (*f)(void)); /* Sets custom Update func */
 void sugi_set_draw(void (*f)(void));   /* Sets custom Draw func */
 
-/* Internal SUGI, SDL and OpenGL Functions */
+/* Internal SUGI, SDL Functions */
 void   sugi_call_init_internal(void);     /* Calls Init Func */
 void   sugi_call_update_internal(void);   /* Calls Update Func */
 void   sugi_call_draw_internal(void);     /* Calls Draw Func */
-void   sugi_sdl_gl_init_internal();       /* SDL and OpenGL Init */
-void   sugi_sdl_gl_deinit_internal();     /* SDL and OpenGL Deinit*/
-void   sugi_sdl_delay_internal();         /* SDL Constant FPS Delay*/
+void   sugi_sdl_gl_init_internal(void);   /* SDL and OpenGL Init */
+void   sugi_sdl_gl_deinit_internal(void); /* SDL and OpenGL Deinit*/
+void   sugi_sdl_delay_internal(void);     /* SDL Constant FPS Delay*/
+
+/* Internal OpenGL Fcuntions */
 void   sugi_gl_init_texture_internal();   /* OpenGL Texture Init */
 void   sugi_gl_set_viewport_internal();   /* OpenGL Viewport Setup */
 GLuint sugi_gl_compile_shader_internal(); /* Shader Compilation */
 void   sugi_gl_render_internal();         /* Render to Screen */
-
+/* Display modes */
+void sugi_gl_render_mode_default_internal(uint32_t rw, uint32_t rh);      /* Default display mode */
+void sugi_gl_render_mode_stretched_internal(uint32_t rw, uint32_t rh);    /* Horizontally stretched mode */
+void sugi_gl_render_mode_square_internal(uint32_t rw, uint32_t rh);       /* Square display mode */
+void sugi_gl_render_mode_square_small_internal(uint32_t rw, uint32_t rh); /* 64x64 display mode */
+void sugi_gl_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128x128 pico-8 display mode */
 
 
 /* GRAPHICS *******************************************************/
