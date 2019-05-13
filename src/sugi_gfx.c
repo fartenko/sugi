@@ -144,3 +144,41 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
 }
 
 
+void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
+{
+  if (fill == 1)
+  {
+    
+  }
+  else
+  {
+    int32_t x   = r;
+    int32_t y   = 0;
+    int32_t err = 0;
+
+    while (x >= y)
+    {
+      sugi_gfx_pset(xc + x, yc + y, c_in);
+      sugi_gfx_pset(xc + y, yc + x, c_in);
+      sugi_gfx_pset(xc - y, yc + x, c_in);
+      sugi_gfx_pset(xc - x, yc + y, c_in);
+      sugi_gfx_pset(xc - x, yc - y, c_in);
+      sugi_gfx_pset(xc - y, yc - x, c_in);
+      sugi_gfx_pset(xc + y, yc - x, c_in);
+      sugi_gfx_pset(xc + x, yc - y, c_in);
+    
+      if (err <= 0)
+      {
+        y += 1;
+        err += 1 * y + 1;
+      }
+
+      if (err > 0)
+      {
+        x -= 1;
+        err -= 1 * x + 1;
+      }
+    }
+  }
+}
+

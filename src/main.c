@@ -47,18 +47,19 @@ void test_draw() {
 
   for (int i = 0; i < 192; i+=2)
   {
-    sugi_gfx_pset(i, 0,   7);
-    sugi_gfx_pset(i, 63,  7);
+    sugi_gfx_pset(i,   0, 7);
+    sugi_gfx_pset(i,  63, 7);
     sugi_gfx_pset(i, 127, 7);
   }
 
   
   sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 15);
-  sugi_gfx_rect(x, y, x + w, y + h, 1, 7);
+  sugi_gfx_rect(    x,     y,     x + w,     y + h, 1, 7);
 
-  sugi_gfx_line(64,64,128,92,7);
-  sugi_gfx_rect(32,16,92,48,0,1);
-  sugi_gfx_rect(40,24,84,40,1,2);
+  sugi_gfx_line(64, 64, 128,  92, 7);
+  sugi_gfx_rect(32, 16,  92,  48, 0, 1);
+  sugi_gfx_rect(40, 24,  84,  40, 1, 2);
+  sugi_gfx_circ(64, 64,  8,    0, 6);
 }
 
 

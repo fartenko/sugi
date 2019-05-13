@@ -1,7 +1,6 @@
 #ifndef SUGI_H
 #define SUGI_H
 
-
 /* SDL headers */
 #include "SDL2/SDL.h"
 /* OpenGL, GLEW headers */
@@ -20,10 +19,9 @@ enum config {
   SUGI_RENDER_WIDTH  = 160, // 160, // 224, // 224, // 224,
   SUGI_RENDER_HEIGHT = 128, // 128, // 144, // 160, // 128,
   SUGI_USE_VSYNC     = 1,
-
-  //GL_MAJOR_VERSION   = 3,
-  //GL_MINOR_VERSION   = 2,
-  //GL_USE_VSYNC       = 1,
+  // GL_MAJOR_VERSION   = 3,
+  // GL_MINOR_VERSION   = 2,
+  // GL_USE_VSYNC       = 1,
 };
 
 
@@ -99,6 +97,7 @@ void   sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_i
 void   sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
 void   sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in);
 void   sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in);
+void   sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in);
 
 /* SHADERS ********************************************************/
 const char *vert_shader_src[];
