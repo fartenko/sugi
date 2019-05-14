@@ -4,8 +4,6 @@
 #include "sugi.h"
 
 
-uint8_t sugi_display_mode = 0;
-
 
 void sugi_gl_init_texture_internal(void)
 {
@@ -49,6 +47,10 @@ void sugi_gl_render_internal(void)
   
   // Reading 4-bit screen data from ram and converting ...
   // ... it to 8 bit color for OpenGL 8-bit Texture
+  // uint8_t sugi_display_mode = &sugi_memory_display_mode_ptr;
+  uint8_t sugi_display_mode = *(sugi_memory_ptr + 0x2800);
+  printf("%d\n",sugi_display_mode);
+
   switch(sugi_display_mode)
   {
     case 1:

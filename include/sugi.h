@@ -39,20 +39,26 @@ uint8_t *sugi_draw_buffer_ptr;
 /* Sugi RAM */
 // 0x0000 - 0x27FF screen data (4bit color)
 // 0x2800 - 0x2FFF some other variables
+//        |
+//        |-0x2800 current color & something else 
+//        |-0x2801 display mode
+//
 // 0x3000 - 0x4FFF spritesheet 0-255
 // 0x5000 - 0x9FFF map 160x128
 // 0xA000 - ......
 
-uint8_t sugi_display_mode;
-
+// uint8_t sugi_display_mode;
 static const uint32_t sugi_memory_screen_size = // = 0x2800;
-                      (SUGI_RENDER_WIDTH / 2) * SUGI_SCREEN_HEIGHT;
+                      (SUGI_RENDER_WIDTH / 2) * SUGI_RENDER_HEIGHT;
 
 //                   0x10000   // 0x0000 -> 0xFFFF   64kB
 //                   0x18000   // 0x0000 -> 0x17FFF  96kB 
 uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
+uint8_t *sugi_memory_color_ptr;
+uint8_t *sugi_memory_display_mode_ptr;
+
 
 /* Functions pointers */
 void (*sugi_init_func)(void);
@@ -62,6 +68,7 @@ void (*sugi_draw_func)(void);
 
 /* Functions */
 void sugi_core_init(void);             /* Main initialization */
+void sugi_core_mem_init(void);         /* Memory initialization */  
 void sugi_core_run(void);              /* Runs an engine */
 void sugi_set_init(void (*f)(void));   /* Sets custom Init func */
 void sugi_set_update(void (*f)(void)); /* Sets custom Update func */

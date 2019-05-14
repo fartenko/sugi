@@ -10,6 +10,26 @@ static int32_t sugi_gfx_camera_x = 0;
 static int32_t sugi_gfx_camera_y = 0;
 
 
+
+// void sugi_gfx_setcolor(int8_t c_in)
+// {
+//
+// }
+//
+//
+// void sugi_gfx_resetcolor()
+// {
+//
+// }
+//
+//
+// int8_t sugi_gfx_getcolor()
+// {
+//
+// }
+
+
+
 int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 {
   x -= sugi_gfx_camera_x;
