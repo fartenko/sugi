@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "sugi.h"
 #include "bool.h"
 
@@ -143,41 +144,58 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
   }
 }
 
+#define PI 3.14159265
+float sugi_gfx_circ_turnatan2_internal(float y, float x)
+{
+  float rad = atan2f(y, x); 
+  float ang = rad * (180.0 / PI);
+  float res = (ang < 0) ? 360.0 + ang : ang;
+  return res / 360.0;
+}
 
-void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
+
+void sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in)
 {
   if (fill == 1)
   {
-    
+    sugi_gfx_line(x0 - y, y0 + x, x0 + y, y0 + x, c_in);
+    sugi_gfx_line(x0 - x, y0 + y, x0 + x, y0 + y, c_in);
+    sugi_gfx_line(x0 - x, y0 - y, x0 + x, y0 - y, c_in);
+    sugi_gfx_line(x0 - y, y0 - x, x0 + y, y0 - x, c_in);
   }
-  else
+  else 
   {
-    int32_t x   = r;
-    int32_t y   = 0;
-    int32_t err = 0;
+    sugi_gfx_pset(x0 + x, y0 + y, c_in);
+    sugi_gfx_pset(x0 - x, y0 + y, c_in);
+    sugi_gfx_pset(x0 + x, y0 - y, c_in);
+    sugi_gfx_pset(x0 - x, y0 - y, c_in);
+    sugi_gfx_pset(x0 + y, y0 + x, c_in);
+    sugi_gfx_pset(x0 - y, y0 + x, c_in);
+    sugi_gfx_pset(x0 + y, y0 - x, c_in);
+    sugi_gfx_pset(x0 - y, y0 - x, c_in);
+  }
+}
 
-    while (x >= y)
+
+void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
+{
+  int32_t x = 0;
+  int32_t y = r;
+  int32_t d = 3 - 2 * r;
+
+  while (y >= x)
+  {
+    sugi_gfx_circ_segment_internal(xc, yc, x, y, fill, c_in);
+    x += 1;
+
+    if (d > 0)
     {
-      sugi_gfx_pset(xc + x, yc + y, c_in);
-      sugi_gfx_pset(xc + y, yc + x, c_in);
-      sugi_gfx_pset(xc - y, yc + x, c_in);
-      sugi_gfx_pset(xc - x, yc + y, c_in);
-      sugi_gfx_pset(xc - x, yc - y, c_in);
-      sugi_gfx_pset(xc - y, yc - x, c_in);
-      sugi_gfx_pset(xc + y, yc - x, c_in);
-      sugi_gfx_pset(xc + x, yc - y, c_in);
-    
-      if (err <= 0)
-      {
-        y += 1;
-        err += 1 * y + 1;
-      }
-
-      if (err > 0)
-      {
-        x -= 1;
-        err -= 1 * x + 1;
-      }
+      y -= 1;
+      d += 4 * (x - y) + 2;
+    }
+    else 
+    {
+      d += 4 * x + 6;
     }
   }
 }

@@ -59,7 +59,7 @@ void test_draw() {
   sugi_gfx_line(64, 64, 128,  92, 7);
   sugi_gfx_rect(32, 16,  92,  48, 0, 1);
   sugi_gfx_rect(40, 24,  84,  40, 1, 2);
-  sugi_gfx_circ(64, 64,  8,    0, 6);
+  sugi_gfx_circ(64, 64,  8,    1, 6);
 }
 
 

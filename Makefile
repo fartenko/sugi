@@ -12,7 +12,7 @@ CC 		 = gcc
 LINKER = gcc
 
 CFLAGS = -w -I./$(INCDIR)/ 
-LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main
+LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm
 
 SOURCES  := $(wildcard $(SRCDIR)/*.c)
 INCLUDES := $(wildcard $(INCDIR)/*.h)

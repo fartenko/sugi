@@ -98,6 +98,9 @@ void   sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
 void   sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in);
 void   sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in);
 void   sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in);
+void   sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
+float  sugi_gfx_circ_turnatan2_internal(float y, float x);
+
 
 /* SHADERS ********************************************************/
 const char *vert_shader_src[];
