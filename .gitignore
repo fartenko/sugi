@@ -37,4 +37,5 @@ bin/
 obj/
 compile_commands.json
 *.swp
+*.swo
 

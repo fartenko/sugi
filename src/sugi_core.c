@@ -7,7 +7,6 @@
 static bool     sugi_core_quit     = false;
 static uint32_t sugi_time_step_ms  = 1000 / 60;
 static uint32_t sugi_delta_ticks   = 0;
-       uint8_t  memory_initialized = 0;
 
 
 /* SDL and OpenGL Functions ***********************************************************/
@@ -95,8 +94,6 @@ void sugi_core_init(void)
   glUseProgram(sugi_gl_program);
 
   sugi_draw_buffer_ptr   = &sugi_draw_buffer;
-  // sugi_memory_ptr        = &sugi_memory;
-  // sugi_memory_screen_ptr = &sugi_memory;
 }
 
 

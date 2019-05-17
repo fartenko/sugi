@@ -11,27 +11,22 @@ static int32_t sugi_gfx_camera_y = 0;
 
 
 
-// void sugi_gfx_setcolor(int8_t c_in)
-// {
-//
-// }
-//
-//
-// void sugi_gfx_resetcolor()
-// {
-//
-// }
-//
-//
-// int8_t sugi_gfx_getcolor()
-// {
-//
-// }
+void sugi_gfx_setcolor(uint8_t c_in)
+{
+  *(sugi_memory_ptr + SUGI_MEM_COLOR_PTR) = c_in;
+}
 
+
+uint8_t sugi_gfx_getcolor()
+{
+  return *(sugi_memory_ptr + SUGI_MEM_COLOR_PTR);
+}
 
 
 int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 {
+  c_in %= 16;
+  sugi_gfx_setcolor(c_in);
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
@@ -40,10 +35,17 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
     return 0;
   
   uint8_t offset = (x % 2 == 0) ? 4 : 0;
-  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) &= 0xf << (4 - offset);
-  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) |= (c_in % 16) << offset; 
-  // *(__sugi_draw_buffer + _x + _y * sugi_render_width) = c % 16; 
+  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) &= 0x0F << (4 - offset);
+  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) |= c_in << offset; 
+  // *(__sugi_draw_buffer + _x + _y * sugi_render_width) = c; 
   return 1;
+}
+
+
+int8_t sugi_gfx_pset_no_col(int32_t x, int32_t y)
+{
+  uint8_t c_in = sugi_gfx_getcolor();
+  sugi_gfx_pset(x, y, c_in);
 }
 
 
@@ -73,8 +75,16 @@ void sugi_gfx_camera(int32_t x, int32_t y)
 void sugi_gfx_clear(uint8_t c)
 {
   c %= 16;
+  sugi_gfx_setcolor(c);
   memset(sugi_memory_ptr, c | c << 4, sugi_memory_screen_size);
   // memset(__sugi_draw_buffer, c, sugi_render_width * sugi_render_height); 
+}
+
+
+void sugi_gfx_clear_no_col()
+{
+  uint8_t c = sugi_gfx_getcolor();
+  sugi_gfx_clear(c);
 }
 
 
@@ -143,6 +153,13 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
 }
 
 
+void sugi_gfx_line_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+  uint8_t c_in = sugi_gfx_getcolor();
+  sugi_gfx_line(x1, y1, x2, y2, c_in);
+}
+
+
 void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in)
 {
   if (fill == 1)
@@ -163,6 +180,14 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
     sugi_gfx_line(x2, y1, x2, y2, c_in);
   }
 }
+
+
+void sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill)
+{
+  uint8_t c_in = sugi_gfx_getcolor();
+  sugi_gfx_rect(x1, y1, x2, y2, fill, c_in); 
+}
+
 
 #define PI 3.14159265
 float sugi_gfx_circ_turnatan2_internal(float y, float x)
@@ -220,3 +245,9 @@ void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
   }
 }
 
+
+void sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill)
+{
+  uint8_t c_in = sugi_gfx_getcolor();
+  sugi_gfx_circ(xc, yc, r, fill, c_in);
+}

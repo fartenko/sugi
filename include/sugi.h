@@ -13,7 +13,7 @@
 
 
 /* CONFIG VALUES **************************************************/
-enum config {
+enum sugi_config {
   SUGI_SCREEN_WIDTH  = 480,
   SUGI_SCREEN_HEIGHT = 384, // ^               ^       ^
   SUGI_RENDER_WIDTH  = 160, // 160, // 224, // 224, // 224,
@@ -47,8 +47,17 @@ uint8_t *sugi_draw_buffer_ptr;
 // 0x5000 - 0x9FFF map 160x128
 // 0xA000 - ......
 
+enum sugi_memory_table {
+  // VRAM
+  SUGI_MEM_SCREEN_PTR    = 0x0000,
+  // DRAW STATE
+  SUGI_MEM_COLOR_PTR     = 0x2800,
+  SUGI_MEM_DISP_MODE_PTR = 0x2801,
+  // ..
+};
+
 // uint8_t sugi_display_mode;
-static const uint32_t sugi_memory_screen_size = // = 0x2800;
+static const uint32_t sugi_memory_screen_size =
                       (SUGI_RENDER_WIDTH / 2) * SUGI_RENDER_HEIGHT;
 
 //                   0x10000   // 0x0000 -> 0xFFFF   64kB
@@ -56,8 +65,6 @@ static const uint32_t sugi_memory_screen_size = // = 0x2800;
 uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
-uint8_t *sugi_memory_color_ptr;
-uint8_t *sugi_memory_display_mode_ptr;
 
 
 /* Functions pointers */
@@ -96,17 +103,24 @@ void sugi_gl_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128
 
 
 /* GRAPHICS *******************************************************/
-int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in);
-int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out);
-void   sugi_gfx_camera(int32_t x, int32_t y);
-void   sugi_gfx_clear(uint8_t c);
-void   sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in);
-void   sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
-void   sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in);
-void   sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in);
-void   sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in);
-void   sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
-float  sugi_gfx_circ_turnatan2_internal(float y, float x);
+void    sugi_gfx_setcolor(uint8_t c_in);
+uint8_t sugi_gfx_getcolor(void);
+int8_t  sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in);
+int8_t  sugi_gfx_pset_no_col(int32_t x, int32_t y);
+int8_t  sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out);
+void    sugi_gfx_camera(int32_t x, int32_t y);
+void    sugi_gfx_clear(uint8_t c);
+void    sugi_gfx_clear_no_col(void);
+void    sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in);
+void    sugi_gfx_line_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+void    sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
+void    sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in);
+void    sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in);
+void    sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill);
+void    sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in);
+void    sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill);
+void    sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
+float   sugi_gfx_circ_turnatan2_internal(float y, float x);
 
 
 /* SHADERS ********************************************************/
