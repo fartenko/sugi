@@ -52,6 +52,7 @@ void test_draw() {
     sugi_gfx_pset(i, 127, 7);
   }
 
+  sugi_gfx_camera(-8,-8);
   
   sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 15);
   sugi_gfx_rect(    x,     y,     x + w,     y + h, 1, 7);

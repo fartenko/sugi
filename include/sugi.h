@@ -52,7 +52,9 @@ enum sugi_memory_table {
   SUGI_MEM_SCREEN_PTR    = 0x0000,
   // DRAW STATE
   SUGI_MEM_COLOR_PTR     = 0x2800,
-  SUGI_MEM_DISP_MODE_PTR = 0x2801,
+  SUGI_MEM_DISP_MODE_PTR = 0x2801,  
+  SUGI_MEM_CAMERA_X_PTR  = 0x2802,
+  SUGI_MEM_CAMERA_Y_PTR  = 0x2806,
   // ..
 };
 

@@ -6,9 +6,8 @@
 #include "bool.h"
 
 
-static int32_t sugi_gfx_camera_x = 0;
-static int32_t sugi_gfx_camera_y = 0;
-
+// static int32_t sugi_gfx_camera_x = 0;
+// static int32_t sugi_gfx_camera_y = 0;
 
 
 void sugi_gfx_setcolor(uint8_t c_in)
@@ -27,6 +26,16 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 {
   c_in %= 16;
   sugi_gfx_setcolor(c_in);
+
+  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 3) << 24;
+  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       | 
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 1) << 8  |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
+
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
@@ -51,6 +60,16 @@ int8_t sugi_gfx_pset_no_col(int32_t x, int32_t y)
 
 int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
 {
+
+  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 3) << 24;
+  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       | 
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 1) << 8  |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
+                              *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
+
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
@@ -66,9 +85,19 @@ int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
 
 void sugi_gfx_camera(int32_t x, int32_t y)
 {
-  // TODO: write data to memory
-  sugi_gfx_camera_x = x;
-  sugi_gfx_camera_y = y;
+  // sugi_gfx_camera_x = x;
+  // sugi_gfx_camera_y = y;
+
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0) =         x & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) =  (x >> 8) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) = (x >> 16) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 3) = (x >> 24) & 0xFF;
+
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0) =         y & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 1) =  (y >> 8) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) = (y >> 16) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) = (y >> 24) & 0xFF;
+
 }
 
 
