@@ -52,10 +52,12 @@ void test_draw() {
     sugi_gfx_pset(i, 127, 7);
   }
 
-  sugi_gfx_camera(-8,-8);
+  sugi_gfx_camera(-9,-8);
   
+  sugi_gfx_clip(16, 16, 64, 64);
   sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 15);
   sugi_gfx_rect(    x,     y,     x + w,     y + h, 1, 7);
+  sugi_gfx_clip_reset();
 
   sugi_gfx_line(64, 64, 128,  92, 7);
   sugi_gfx_rect(32, 16,  92,  48, 0, 1);

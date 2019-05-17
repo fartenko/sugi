@@ -36,11 +36,18 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
 
+  uint8_t sugi_gfx_clip_x1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0);
+  uint8_t sugi_gfx_clip_y1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1);
+  uint8_t sugi_gfx_clip_x2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2);
+  uint8_t sugi_gfx_clip_y2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3);
+
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
-  if (x < 0 || x >= SUGI_RENDER_WIDTH ||
-      y < 0 || y >= SUGI_RENDER_HEIGHT)
+  // if (x < 0 || x >= SUGI_RENDER_WIDTH ||
+  //     y < 0 || y >= SUGI_RENDER_HEIGHT)
+  if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 ||
+      y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)
     return 0;
   
   uint8_t offset = (x % 2 == 0) ? 4 : 0;
@@ -280,3 +287,45 @@ void sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill)
   uint8_t c_in = sugi_gfx_getcolor();
   sugi_gfx_circ(xc, yc, r, fill, c_in);
 }
+
+
+void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
+{
+  if (x2 < x1)
+  {
+    uint8_t tmp = x1;
+    x2 = x1;
+    x1 = tmp;
+  }
+
+  if (y2 < y1)
+  {
+    uint8_t tmp = y1;
+    y2 = y1;
+    y1 = tmp;
+  }
+
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0) = x1;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1) = y1;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2) = x2;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3) = y2;
+}
+
+
+void sugi_gfx_clip_reset()
+{
+  sugi_gfx_clip(0, 0, SUGI_RENDER_WIDTH, SUGI_RENDER_HEIGHT);
+}
+
+
+void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
+{
+  x1 = (x1 < 0) ? 0 : (x1 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x1;
+  y1 = (y1 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y1; 
+  x2 = (x2 < 0) ? 0 : (x2 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x2;
+  y2 = (y2 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y2; 
+  sugi_gfx_clip_internal((uint8_t)x1, (uint8_t)y1, (uint8_t)x2, (uint8_t)y2);
+}
+
+
+

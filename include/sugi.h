@@ -55,6 +55,7 @@ enum sugi_memory_table {
   SUGI_MEM_DISP_MODE_PTR = 0x2801,  
   SUGI_MEM_CAMERA_X_PTR  = 0x2802,
   SUGI_MEM_CAMERA_Y_PTR  = 0x2806,
+  SUGI_MEM_CLIP_PTR      = 0x280A,
   // ..
 };
 
@@ -123,6 +124,9 @@ void    sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_
 void    sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill);
 void    sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
 float   sugi_gfx_circ_turnatan2_internal(float y, float x);
+void    sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+void    sugi_gfx_clip_reset(void);
+void    sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
 
 /* SHADERS ********************************************************/
