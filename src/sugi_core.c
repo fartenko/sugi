@@ -102,6 +102,7 @@ void sugi_core_mem_init(void)
   sugi_memory_ptr        = &sugi_memory;
   sugi_memory_screen_ptr = &sugi_memory;
   sugi_gfx_clip_reset();
+  sugi_gfx_pal_reset();
 }
 
 

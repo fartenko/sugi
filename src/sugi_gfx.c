@@ -46,11 +46,12 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 
   // if (x < 0 || x >= SUGI_RENDER_WIDTH ||
   //     y < 0 || y >= SUGI_RENDER_HEIGHT)
-  if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 ||
-      y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)
+  if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 || // if we're out of bound of 
+      y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)   //   a clip area.
     return 0;
   
-  uint8_t offset = (x % 2 == 0) ? 4 : 0;
+  uint8_t offset = (x % 2 == 0) ? 4 : 0;                     // byte offset
+  c_in = *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR + c_in);  // applying palette
   *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) &= 0x0F << (4 - offset);
   *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) |= c_in << offset; 
   // *(__sugi_draw_buffer + _x + _y * sugi_render_width) = c; 
@@ -327,5 +328,26 @@ void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
   sugi_gfx_clip_internal((uint8_t)x1, (uint8_t)y1, (uint8_t)x2, (uint8_t)y2);
 }
 
+
+void sugi_gfx_pal_reset()
+{
+  for (uint8_t i = 0; i < 16; i++)
+  {
+    *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR   + i) = i;
+    *(sugi_memory_ptr + SUGI_MEM_PAL_SCREEN_PTR + i) = i;
+  }
+}
+
+
+void sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode)
+{
+  // replaces c1 with c2
+  // mode 0 - draw palette (applied at draw functions)
+  // mode 1 - screen palette (applied at screen render)
+  c1 %= 16;
+  c2 %= 16;
+  *(sugi_memory_ptr + 
+      ((mode == 0) ? SUGI_MEM_PAL_DRAW_PTR : SUGI_MEM_PAL_SCREEN_PTR) + c1) = c2;
+}
 
 

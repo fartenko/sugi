@@ -49,13 +49,16 @@ uint8_t *sugi_draw_buffer_ptr;
 
 enum sugi_memory_table {
   // VRAM
-  SUGI_MEM_SCREEN_PTR    = 0x0000,
+  SUGI_MEM_SCREEN_PTR     = 0x0000,
   // DRAW STATE
-  SUGI_MEM_COLOR_PTR     = 0x2800,
-  SUGI_MEM_DISP_MODE_PTR = 0x2801,  
-  SUGI_MEM_CAMERA_X_PTR  = 0x2802,
-  SUGI_MEM_CAMERA_Y_PTR  = 0x2806,
-  SUGI_MEM_CLIP_PTR      = 0x280A,
+  SUGI_MEM_COLOR_PTR      = 0x2800,
+  SUGI_MEM_DISP_MODE_PTR  = 0x2801,  
+  SUGI_MEM_CAMERA_X_PTR   = 0x2802,
+  SUGI_MEM_CAMERA_Y_PTR   = 0x2806,
+  SUGI_MEM_CLIP_PTR       = 0x280A, // 0x280B, 0x280C, 0x280D
+  SUGI_MEM_PAL_DRAW_PTR   = 0x280E, // 0x280F .. 0x281D
+  SUGI_MEM_PAL_SCREEN_PTR = 0x281E, // 0x281F .. 0x282D
+                      //  = 0x282E,
   // ..
 };
 
@@ -127,6 +130,8 @@ float   sugi_gfx_circ_turnatan2_internal(float y, float x);
 void    sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void    sugi_gfx_clip_reset(void);
 void    sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+void    sugi_gfx_pal_reset(void);
+void    sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode);
 
 
 /* SHADERS ********************************************************/

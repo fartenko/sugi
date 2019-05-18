@@ -48,8 +48,6 @@ void sugi_gl_render_internal(void)
   // Reading 4-bit screen data from ram and converting ...
   // ... it to 8 bit color for OpenGL 8-bit Texture
   uint8_t sugi_display_mode = *(sugi_memory_ptr + SUGI_MEM_DISP_MODE_PTR);
-  printf("%d\n",sugi_display_mode);
-
   switch(sugi_display_mode)
   {
     case 1:
@@ -138,8 +136,16 @@ void sugi_gl_render_mode_default_internal(uint32_t rw, uint32_t rh)
 {
   for (int i = 0; i < sugi_memory_screen_size; i++)
   {
-    *(sugi_draw_buffer_ptr + i * 2 + 0) = *(sugi_memory_ptr + i) >> 4 & 0xf; 
-    *(sugi_draw_buffer_ptr + i * 2 + 1) = *(sugi_memory_ptr + i) & 0xf;
+    // we split a 8 bit value into two 4bit colors
+    uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
+    uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+    // applying a screen palette
+    color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+    color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
+    // TODO: rename sugi_draw_buffer_ptr to sugi_screen_buffer_ptr
+    // putting pixels to a draw buffer (or screen buffer)
+    *(sugi_draw_buffer_ptr + i * 2 + 0) = color1; 
+    *(sugi_draw_buffer_ptr + i * 2 + 1) = color2;
   }
 }
 
@@ -151,11 +157,16 @@ void sugi_gl_render_mode_stretched_internal(uint32_t rw, uint32_t rh)
     if (i % (rw / 2) < (rw / 4))
     {
       // color1, color2: 4 bit colors
-      // shift_back:     offsets some adresses back to ...
-      // ... fill the gaps of unrendered pixels
+      // shift_back:     offsets some adresses back to ..
+      //             .. fill the gaps of unrendered pixels
       uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
       uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+      // shifting back to skip second half of a screen
       int32_t shift_back = (i / (rw / 2)) * rw;
+      // applying a screen palette
+      color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+      color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
+      // putting 'stretched' pixels
       *(sugi_draw_buffer_ptr + i * 4 + 0 - shift_back) = color1; 
       *(sugi_draw_buffer_ptr + i * 4 + 1 - shift_back) = color1; 
       *(sugi_draw_buffer_ptr + i * 4 + 2 - shift_back) = color2; 
@@ -173,7 +184,11 @@ void sugi_gl_render_mode_square_internal(uint32_t rw, uint32_t rh)
     {
       uint8_t color1   = *(sugi_memory_ptr + i) >> 4 & 0xf;
       uint8_t color2   = *(sugi_memory_ptr + i) & 0xf;
+      // offsets screen right
       int16_t offset_x = (rw - rh) / 2;
+      // applying a screen palette
+      color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+      color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
       *(sugi_draw_buffer_ptr + offset_x + i * 2 + 0) = color1; 
       *(sugi_draw_buffer_ptr + offset_x + i * 2 + 1) = color2;
     }
@@ -191,15 +206,21 @@ void sugi_gl_render_mode_square_small_internal(uint32_t rw, uint32_t rh)
       // offset_t: offsets render in y axis
       uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
       uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+      // shifting back to skip unnecesary pixels
       int32_t shift_back = (i / (rw / 2)) / 64;
+      // offsetting right and down
       int16_t offset_x   = (rw / 2) - 64;
       int16_t offset_y   = (rh - 128) * rw / 2;
-      // upper pixels
+      // applying a screen palette
+      color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+      color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
+      // puting pixels twise to make a zoomed in effect for 64x64 screen 
+      // putting upper pixels
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 0 - shift_back) = color1; 
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 1 - shift_back) = color1;
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 2 - shift_back) = color2; 
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 3 - shift_back) = color2; 
-      // lower pixels
+      // putting lower pixels
       offset_x += rw;
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 0 - shift_back) = color1; 
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 4 + 1 - shift_back) = color1;
@@ -220,6 +241,10 @@ void sugi_gl_render_mode_square_pico_internal(uint32_t rw, uint32_t rh)
       uint8_t color2   = *(sugi_memory_ptr + i) & 0xf;
       int16_t offset_x = (rw - 128) / 2;
       int16_t offset_y = (rh - 128) * rw / 2;
+      // applying a screen palette
+      color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+      color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
+      // putting pixels
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 2 + 0) = color1; 
       *(sugi_draw_buffer_ptr + offset_x + offset_y + i * 2 + 1) = color2;
     }
