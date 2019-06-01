@@ -58,8 +58,9 @@ enum sugi_memory_table {
   SUGI_MEM_CLIP_PTR       = 0x280A, // 0x280B, 0x280C, 0x280D
   SUGI_MEM_PAL_DRAW_PTR   = 0x280E, // 0x280F .. 0x281D
   SUGI_MEM_PAL_SCREEN_PTR = 0x281E, // 0x281F .. 0x282D
-                      //  = 0x282E,
-  // ..
+  SUGI_MEM_PALT_PTR       = 0x282E, // 0x282F
+  SUGI_MEM_PALT_SET_PTR   = 0x2830, 
+                      //  = 0x2831,
 };
 
 // uint8_t sugi_display_mode;
@@ -131,7 +132,10 @@ void    sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void    sugi_gfx_clip_reset(void);
 void    sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 void    sugi_gfx_pal_reset(void);
+void    sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2);
 void    sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode);
+void    sugi_gfx_palt_reset(void);
+void    sugi_gfx_palt(uint8_t c, uint8_t t);
 
 
 /* SHADERS ********************************************************/

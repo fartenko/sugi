@@ -8,11 +8,16 @@ OBJDIR = obj
 BINDIR = bin
 INCDIR = include
 
-CC 		 = gcc
+CC     = gcc
 LINKER = gcc
 
 CFLAGS = -w -I./$(INCDIR)/ 
 LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm
+
+# Linker flags:
+# * -lGL -lGLU -lGLEW: GLEW libs
+# * -lSDL2 -lSDL2main: SDL2 libs
+# * -lm: math lib
 
 SOURCES  := $(wildcard $(SRCDIR)/*.c)
 INCLUDES := $(wildcard $(INCDIR)/*.h)
@@ -39,23 +44,3 @@ remove:
 	@$(rm) $(BINDIR)/$(TARGET)
 	@echo "$(rm) $(BINDIR)/$(TARGET)"
 
-
-# Old version
-# Reference:
-# Lazy Foo's SDL2 Tutorials.
-# ---------------------------------------
-# OBJS = main.c  
-# CC = gcc
-#
-# COMPILER_FLAGS = -w
-# LINKER_FLAGS = -lSDL2 -lSDL2main
-#
-# OBJ_NAME = bin\exec 
-# 
-# INCLUDE_PATHS = -I./include/
-# 
-# all : $(OBJS)
-# 	$(CC) $(OBJS) $(INCLUDE_PATHS)    \
-# 	$(COMPILER_FLAGS) $(LINKER_FLAGS) \
-# 	-o $(OBJ_NAME)
-# ---------------------------------------

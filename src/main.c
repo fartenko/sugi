@@ -44,22 +44,23 @@ void test_update(void) {
 
 void test_draw() {
   sugi_gfx_pal_reset();
-  sugi_gfx_clear(9);
+  sugi_gfx_clear(0);
 
-  sugi_gfx_pal(7,1,0);
+
+  for (int i = 0; i < 8; i++)
+  {
+    sugi_gfx_rect(8 * i, 0, 8 * (i + 1), 7, 1, i);
+  }
+
   for (int i = 0; i < 192; i+=2)
   {
     sugi_gfx_pset(i,   0, 7);
     sugi_gfx_pset(i,  63, 7);
     sugi_gfx_pset(i, 127, 7);
   }
-  sugi_gfx_pal(7,7,0);
-
-  sugi_gfx_camera(x / 4 - 32, y / 4 - 32);
   
   sugi_gfx_clip(16, 16, 64, 64);
-  sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 15);
-  sugi_gfx_rect(    x,     y,     x + w,     y + h, 1, 7);
+  sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 7);
   sugi_gfx_clip_reset();
 
   sugi_gfx_line(64, 64, 128,  92, 7);
@@ -67,11 +68,13 @@ void test_draw() {
   sugi_gfx_rect(40, 24,  84,  40, 1, 2);
   sugi_gfx_circ(64, 64,  8,    1, 6);
 
+  /*
   if (xs > 0)
   {
     for (uint8_t i = 0; i < 16; i++)
       sugi_gfx_pal(i, i - 8, 1);
   }
+  */
 }
 
 

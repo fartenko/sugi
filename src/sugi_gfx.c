@@ -6,10 +6,6 @@
 #include "bool.h"
 
 
-// static int32_t sugi_gfx_camera_x = 0;
-// static int32_t sugi_gfx_camera_y = 0;
-
-
 void sugi_gfx_setcolor(uint8_t c_in)
 {
   *(sugi_memory_ptr + SUGI_MEM_COLOR_PTR) = c_in;
@@ -346,8 +342,59 @@ void sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode)
   // mode 1 - screen palette (applied at screen render)
   c1 %= 16;
   c2 %= 16;
-  *(sugi_memory_ptr + 
-      ((mode == 0) ? SUGI_MEM_PAL_DRAW_PTR : SUGI_MEM_PAL_SCREEN_PTR) + c1) = c2;
+  *(sugi_memory_ptr + ((mode == 0) ? SUGI_MEM_PAL_DRAW_PTR : SUGI_MEM_PAL_SCREEN_PTR) + c1) = c2;
 }
+
+
+void sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2)
+{
+  sugi_gfx_pal(c1, c2, 0);
+}
+
+
+// PALT -> 0 - transparetn 
+// PALT -> 1 - opaque
+void sugi_gfx_palt_reset()
+{
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 0) = 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 1) = 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) = 0x00;
+}
+
+
+// palt affects sprite drawing only
+void sugi_gfx_palt(uint8_t c, uint8_t t)
+{
+  // clipping c between 0 and 15
+  // a memory offset, 1 or 0 to select a 8bit part of a 16bit value
+  c %= 16;
+  uint8_t mem_off = c / 8;
+  c -= mem_off * 8;
+
+  // getting a current value of palt register
+  // creating a XOR mask to toggle one of the bits in 8bit part
+  // e.g. first bit is 0 and we want to set it to 1,
+  // .. then t=1, and 0^t=1
+  // .. if we want to set from 0 to 1,
+  // .. then t=0, and 1^~t=0
+  // TODO: add palt logic to spr()
+  uint8_t val = *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off);
+  t = ((((val >> c) & 0x1 == 0) ? t : ~t) & 0x1) << c;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off) ^= t;
+  if (c == 0)
+    *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) = t;
+}
+
+/*
+  uint8_t palt_mem_off = c_in / 8;
+  // uint8_t c_palt = c_in
+  // c_palt -= mem_off * 8;
+
+  // if a color is transparent 
+  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> 
+                                       (c_in - mem_off * 8)) & 
+                                                        0x01 == 0)
+    return 0;
+*/
 
 
