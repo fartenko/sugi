@@ -4,7 +4,8 @@
 
 static int x, w, y, h, xs, ys;
 
-void test_init(void) {
+void test_init(void) 
+{
   x  = 28; 
   w  = 8;
   y  = 28;
@@ -14,7 +15,8 @@ void test_init(void) {
 }
 
 
-void test_update(void) {
+void test_update(void) 
+{
   x += xs;
   y += ys;
 
@@ -42,15 +44,13 @@ void test_update(void) {
 }
 
 
-void test_draw() {
+void test_draw() 
+{
   sugi_gfx_pal_reset();
   sugi_gfx_clear(0);
 
-
   for (int i = 0; i < 8; i++)
-  {
     sugi_gfx_rect(8 * i, 0, 8 * (i + 1), 7, 1, i);
-  }
 
   for (int i = 0; i < 192; i+=2)
   {
@@ -66,15 +66,7 @@ void test_draw() {
   sugi_gfx_line(64, 64, 128,  92, 7);
   sugi_gfx_rect(32, 16,  92,  48, 0, 1);
   sugi_gfx_rect(40, 24,  84,  40, 1, 2);
-  sugi_gfx_circ(64, 64,  8,    1, 6);
-
-  /*
-  if (xs > 0)
-  {
-    for (uint8_t i = 0; i < 16; i++)
-      sugi_gfx_pal(i, i - 8, 1);
-  }
-  */
+  sugi_gfx_circ(64, 64,   8,   1, 6);
 }
 
 

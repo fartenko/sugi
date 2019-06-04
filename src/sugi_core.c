@@ -84,6 +84,7 @@ void sugi_call_draw_internal(void)
 { sugi_draw_func(); }
   
 
+// Initailizing SDL, OpenGL, creating a window etc.
 void sugi_core_init(void) 
 {
   sugi_sdl_gl_init_internal();
@@ -93,10 +94,11 @@ void sugi_core_init(void)
   const GLuint shader = sugi_gl_compile_shader_internal();  
   glUseProgram(sugi_gl_program);
 
-  sugi_draw_buffer_ptr   = &sugi_draw_buffer;
+  sugi_draw_buffer_ptr = &sugi_draw_buffer;
 }
 
 
+// Initalizing virtual RAM
 void sugi_core_mem_init(void)
 {
   sugi_memory_ptr        = &sugi_memory;
@@ -106,6 +108,7 @@ void sugi_core_mem_init(void)
 }
 
 
+// Runs a game loop
 void sugi_core_run(void)
 {
   sugi_call_init_internal();

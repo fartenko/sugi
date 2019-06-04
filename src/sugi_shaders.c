@@ -3,8 +3,7 @@
 
 
 const char *vert_shader_src[] = {
-  "\
-  #version 130\n\
+  "#version 130\n\
   void main() {\
     gl_Position = ftransform();\
     gl_TexCoord[0] = gl_MultiTexCoord0;\
@@ -14,13 +13,11 @@ const char *vert_shader_src[] = {
 
 
 const char *frag_shader_src[] = {
-  "\
-  #version 130\n\
+  "#version 130\n\
   uniform sampler2D text_in;\
   void main() {\
     vec4 c  = texture2D(text_in, gl_TexCoord[0].st);\ 
     float r = int(c.a * 2550) + 1;\ 
-    \
     if (r >= 0)   {c = vec4("SUGI_COLOR00");}\
     if (r >= 10)  {c = vec4("SUGI_COLOR01");}\
     if (r >= 20)  {c = vec4("SUGI_COLOR02");}\
@@ -37,7 +34,6 @@ const char *frag_shader_src[] = {
     if (r >= 130) {c = vec4("SUGI_COLOR13");}\
     if (r >= 140) {c = vec4("SUGI_COLOR14");}\
     if (r >= 150) {c = vec4("SUGI_COLOR15");}\
-    \
     gl_FragColor = c;\
   }"
 };

@@ -6,23 +6,30 @@
 #include "bool.h"
 
 
+// Sets a current color to draw pixels with
 void sugi_gfx_setcolor(uint8_t c_in)
 {
   *(sugi_memory_ptr + SUGI_MEM_COLOR_PTR) = c_in;
 }
 
 
+// Gets a current color
 uint8_t sugi_gfx_getcolor()
 {
   return *(sugi_memory_ptr + SUGI_MEM_COLOR_PTR);
 }
 
 
+// Puts a pixel on a screen
 int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 {
+  // clipping color value between 0 and 15
+  // and setting a current color 
   c_in %= 16;
   sugi_gfx_setcolor(c_in);
 
+  // getting a 32 bit camera position value from
+  // 4 8bit values from a virtual RAM
   int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
@@ -32,11 +39,13 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
 
+  // getting a screen-space clipping region
   uint8_t sugi_gfx_clip_x1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0);
   uint8_t sugi_gfx_clip_y1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1);
   uint8_t sugi_gfx_clip_x2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2);
   uint8_t sugi_gfx_clip_y2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3);
 
+  // converting a pixel world-space position to a screen-space position
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
@@ -46,6 +55,8 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
       y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)   //   a clip area.
     return 0;
   
+  // because we're dealing with 4 bit colors, we store two 
+  // colors in one 8 bit value
   uint8_t offset = (x % 2 == 0) ? 4 : 0;                     // byte offset
   c_in = *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR + c_in);  // applying palette
   *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) &= 0x0F << (4 - offset);
@@ -55,6 +66,8 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 }
 
 
+// Puts a pixels but needs no color argument, instead
+// it get a color stored in a virtual RAM
 int8_t sugi_gfx_pset_no_col(int32_t x, int32_t y)
 {
   uint8_t c_in = sugi_gfx_getcolor();
@@ -62,9 +75,10 @@ int8_t sugi_gfx_pset_no_col(int32_t x, int32_t y)
 }
 
 
+// Gets a pixel color of a pixel
 int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
 {
-
+  // Getting a camera position
   int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
@@ -74,6 +88,7 @@ int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
 
+  // Converting position to screen-space position
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
@@ -87,6 +102,8 @@ int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
 }
 
 
+// Sets a camera position,
+// What it really does, is it just offsets a position, where pixels would be drawn
 void sugi_gfx_camera(int32_t x, int32_t y)
 {
   // sugi_gfx_camera_x = x;
@@ -105,6 +122,7 @@ void sugi_gfx_camera(int32_t x, int32_t y)
 }
 
 
+// Clears a screen
 void sugi_gfx_clear(uint8_t c)
 {
   c %= 16;
@@ -114,6 +132,7 @@ void sugi_gfx_clear(uint8_t c)
 }
 
 
+// Clears a screen without a color argumeent needed
 void sugi_gfx_clear_no_col()
 {
   uint8_t c = sugi_gfx_getcolor();
@@ -121,6 +140,7 @@ void sugi_gfx_clear_no_col()
 }
 
 
+// Draws a horizontal line
 void sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in)
 {
   int32_t _x1 = (x1 < x2) ? x1 : x2;
@@ -131,6 +151,8 @@ void sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in)
   }
 }
 
+
+// Draws a vertical line
 void sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in)
 {
   int32_t _y1 = (y1 < y2) ? y1 : y2;
@@ -142,20 +164,23 @@ void sugi_gfx_vline(int32_t x, int32_t y1, int32_t y2, uint8_t c_in)
 }
 
 
+// Draws a line
 void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
 {
+  // If both x coordinates are equal, we'll just draw a horizontal line
   if (x1 == x2)
   {
     sugi_gfx_vline(x1, y1, y2, c_in);
     return;
   }
-
+  // If both y coordinates are equal, we'll just draw a vertical line
   if (y1 == y2)
   {
     sugi_gfx_hline(x1, x2, y1, c_in);
     return;
   }
 
+  // Bresenham's line drawing algorithm
   int32_t dx   = abs(x2 - x1);
   int32_t sx   = (x1 < x2) ? 1 : -1;
   int32_t dy   = abs(y2 - y1);
@@ -186,6 +211,7 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
 }
 
 
+// Draws a line but requires no color argument
 void sugi_gfx_line_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
   uint8_t c_in = sugi_gfx_getcolor();
@@ -193,6 +219,7 @@ void sugi_gfx_line_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 }
 
 
+// Draws a rectangle
 void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, uint8_t c_in)
 {
   if (fill == 1)
@@ -215,6 +242,7 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
 }
 
 
+// Draws a rectabgle but requires no color argument
 void sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill)
 {
   uint8_t c_in = sugi_gfx_getcolor();
@@ -222,16 +250,18 @@ void sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t
 }
 
 
-#define PI 3.14159265
-float sugi_gfx_circ_turnatan2_internal(float y, float x)
-{
-  float rad = atan2f(y, x); 
-  float ang = rad * (180.0 / PI);
-  float res = (ang < 0) ? 360.0 + ang : ang;
-  return res / 360.0;
-}
+// float sugi_gfx_circ_turnatan2_internal(float y, float x)
+// {
+//   #define PI 3.14159265 
+// 
+//   float rad = atan2f(y, x); 
+//   float ang = rad * (180.0 / PI);
+//   float res = (ang < 0) ? 360.0 + ang : ang;
+//   return res / 360.0;
+// }
 
 
+// Draws a circle segment
 void sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in)
 {
   if (fill == 1)
@@ -255,6 +285,7 @@ void sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y
 }
 
 
+// Draws a circle using a Bresenham's Circle drawing algorithm
 void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
 {
   int32_t x = 0;
@@ -279,6 +310,7 @@ void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
 }
 
 
+// Draws a circle but requires no circle argument
 void sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill)
 {
   uint8_t c_in = sugi_gfx_getcolor();
@@ -286,6 +318,7 @@ void sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill)
 }
 
 
+// Internal clip function that sets screen-space draw boundaries or clipping region
 void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
 {
   if (x2 < x1)
@@ -302,6 +335,7 @@ void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
     y1 = tmp;
   }
 
+  // Writes data to a virtual RAM
   *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0) = x1;
   *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1) = y1;
   *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2) = x2;
@@ -309,12 +343,14 @@ void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
 }
 
 
+// Resers a clip region to a screen size
 void sugi_gfx_clip_reset()
 {
   sugi_gfx_clip(0, 0, SUGI_RENDER_WIDTH, SUGI_RENDER_HEIGHT);
 }
 
 
+// Sets a screen-space draw bounaries or clipping region
 void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
   x1 = (x1 < 0) ? 0 : (x1 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x1;
@@ -325,6 +361,7 @@ void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 }
 
 
+// Resets a palette swap values
 void sugi_gfx_pal_reset()
 {
   for (uint8_t i = 0; i < 16; i++)
@@ -335,6 +372,7 @@ void sugi_gfx_pal_reset()
 }
 
 
+// Replaces color c1 with color c2
 void sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode)
 {
   // replaces c1 with c2
@@ -346,6 +384,8 @@ void sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode)
 }
 
 
+// Replaces color c1 with color c2 but requires no mode argument
+// mode is 0 (draw palette) by default
 void sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2)
 {
   sugi_gfx_pal(c1, c2, 0);
@@ -387,13 +427,11 @@ void sugi_gfx_palt(uint8_t c, uint8_t t)
 
 /*
   uint8_t palt_mem_off = c_in / 8;
-  // uint8_t c_palt = c_in
+  // uint8_t c_palt = c_in;
   // c_palt -= mem_off * 8;
 
   // if a color is transparent 
-  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> 
-                                       (c_in - mem_off * 8)) & 
-                                                        0x01 == 0)
+  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_in - mem_off * 8)) & 0x01 == 0)
     return 0;
 */
 
