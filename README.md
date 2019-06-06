@@ -1,3 +1,6 @@
 # sugi
-Another fantasy console inspired by PICO-8 and TIC80.
+A fantasy console inspired by pico8.
 
+### Dependencies
+`libsdl2-2.0`
+`libglew2.0`
