@@ -1,4 +1,4 @@
-# Reference: 
+# Reference:
 # https://stackoverflow.com/questions/7004702
 
 TARGET = exec
@@ -11,7 +11,7 @@ INCDIR = include
 CC     = gcc
 LINKER = gcc
 
-CFLAGS = -w -I./$(INCDIR)/ 
+CFLAGS = -w -g -I./$(INCDIR)/
 LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm
 
 # Linker flags:
@@ -36,11 +36,10 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 run:
 	@$(BINDIR)/$(TARGET)
 
-clean: 
+clean:
 	@$(rm) $(OBJECTS)
 	@echo "$(rm) $(OBJECTS)"
 
 remove:
 	@$(rm) $(BINDIR)/$(TARGET)
 	@echo "$(rm) $(BINDIR)/$(TARGET)"
-

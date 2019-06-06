@@ -24,17 +24,17 @@ uint8_t sugi_gfx_getcolor()
 int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 {
   // clipping color value between 0 and 15
-  // and setting a current color 
+  // and setting a current color
   c_in %= 16;
   sugi_gfx_setcolor(c_in);
 
   // getting a 32 bit camera position value from
   // 4 8bit values from a virtual RAM
-  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
+  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 3) << 24;
-  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       | 
+  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
@@ -51,17 +51,17 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
 
   // if (x < 0 || x >= SUGI_RENDER_WIDTH ||
   //     y < 0 || y >= SUGI_RENDER_HEIGHT)
-  if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 || // if we're out of bound of 
+  if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 || // if we're out of bound of
       y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)   //   a clip area.
     return 0;
-  
-  // because we're dealing with 4 bit colors, we store two 
+
+  // because we're dealing with 4 bit colors, we store two
   // colors in one 8 bit value
   uint8_t offset = (x % 2 == 0) ? 4 : 0;                     // byte offset
   c_in = *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR + c_in);  // applying palette
   *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) &= 0x0F << (4 - offset);
-  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) |= c_in << offset; 
-  // *(__sugi_draw_buffer + _x + _y * sugi_render_width) = c; 
+  *(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) |= c_in << offset;
+  // *(__sugi_draw_buffer + _x + _y * sugi_render_width) = c;
   return 1;
 }
 
@@ -79,11 +79,11 @@ int8_t sugi_gfx_pset_no_col(int32_t x, int32_t y)
 int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
 {
   // Getting a camera position
-  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       | 
+  int32_t sugi_gfx_camera_x = *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 0)       |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_X_PTR + 3) << 24;
-  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       | 
+  int32_t sugi_gfx_camera_y = *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 0)       |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 1) << 8  |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 2) << 16 |
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
@@ -128,7 +128,7 @@ void sugi_gfx_clear(uint8_t c)
   c %= 16;
   sugi_gfx_setcolor(c);
   memset(sugi_memory_ptr, c | c << 4, sugi_memory_screen_size);
-  // memset(__sugi_draw_buffer, c, sugi_render_width * sugi_render_height); 
+  // memset(__sugi_draw_buffer, c, sugi_render_width * sugi_render_height);
 }
 
 
@@ -185,7 +185,7 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
   int32_t sx   = (x1 < x2) ? 1 : -1;
   int32_t dy   = abs(y2 - y1);
   int32_t sy   = (y1 < y2) ? 1 : -1;
-  int32_t err  = ((dx > dy) ? dx : dy) / 2; 
+  int32_t err  = ((dx > dy) ? dx : dy) / 2;
   int32_t err2 = 0;
 
   while (true)
@@ -226,7 +226,7 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
   {
     int32_t _y1 = (y1 < y2) ? y1 : y2;
     int32_t _y2 = (y1 < y2) ? y2 : y1;
-    
+
     for (int32_t y = _y1; y <= _y2; y++)
     {
       sugi_gfx_line(x1, y, x2, y, c_in);
@@ -246,15 +246,15 @@ void sugi_gfx_rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill, 
 void sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t fill)
 {
   uint8_t c_in = sugi_gfx_getcolor();
-  sugi_gfx_rect(x1, y1, x2, y2, fill, c_in); 
+  sugi_gfx_rect(x1, y1, x2, y2, fill, c_in);
 }
 
 
 // float sugi_gfx_circ_turnatan2_internal(float y, float x)
 // {
-//   #define PI 3.14159265 
-// 
-//   float rad = atan2f(y, x); 
+//   #define PI 3.14159265
+//
+//   float rad = atan2f(y, x);
 //   float ang = rad * (180.0 / PI);
 //   float res = (ang < 0) ? 360.0 + ang : ang;
 //   return res / 360.0;
@@ -271,7 +271,7 @@ void sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y
     sugi_gfx_line(x0 - x, y0 - y, x0 + x, y0 - y, c_in);
     sugi_gfx_line(x0 - y, y0 - x, x0 + y, y0 - x, c_in);
   }
-  else 
+  else
   {
     sugi_gfx_pset(x0 + x, y0 + y, c_in);
     sugi_gfx_pset(x0 - x, y0 + y, c_in);
@@ -302,7 +302,7 @@ void sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_in)
       y -= 1;
       d += 4 * (x - y) + 2;
     }
-    else 
+    else
     {
       d += 4 * x + 6;
     }
@@ -354,9 +354,9 @@ void sugi_gfx_clip_reset()
 void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
   x1 = (x1 < 0) ? 0 : (x1 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x1;
-  y1 = (y1 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y1; 
+  y1 = (y1 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y1;
   x2 = (x2 < 0) ? 0 : (x2 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x2;
-  y2 = (y2 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y2; 
+  y2 = (y2 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y2;
   sugi_gfx_clip_internal((uint8_t)x1, (uint8_t)y1, (uint8_t)x2, (uint8_t)y2);
 }
 
@@ -392,12 +392,12 @@ void sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2)
 }
 
 
-// PALT -> 0 - transparetn 
+// PALT -> 0 - transparetn
 // PALT -> 1 - opaque
 void sugi_gfx_palt_reset()
 {
-  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 0) = 0xFF;
-  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 1) = 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 0) = 0x00;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + 1) = 0x00;
   *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) = 0x00;
 }
 
@@ -418,21 +418,79 @@ void sugi_gfx_palt(uint8_t c, uint8_t t)
   // .. if we want to set from 0 to 1,
   // .. then t=0, and 1^~t=0
   // TODO: add palt logic to spr()
+  if (c == 0)
+  {
+    // t = ~t & 0x1;
+    *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) = t;
+  }
+
   uint8_t val = *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off);
   t = ((((val >> c) & 0x1 == 0) ? t : ~t) & 0x1) << c;
-  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off) ^= t;
-  if (c == 0)
-    *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) = t;
+  val ^= t;
+  *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off) = val;
 }
 
+
+
+void sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in)
+{
+  uint8_t c_pal = *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR + c_in);
+  if (c_pal == 0 && *(sugi_memory_ptr + SUGI_MEM_PALT_SET_PTR) == 0)
+    return;
+
+  uint8_t palt_mem_off = c_pal / 8;
+  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_pal - palt_mem_off * 8)) & 0x01 == 1)
+     return;
+
+  sugi_gfx_pset(x, y, c_in);
+}
+
+
+void sugi_gfx_spr(uint8_t s, int32_t x, int32_t y)
+{
+  if (s < 0 || s >= 256)
+    return;
+
+  // getting a color, to set it back to original
+  uint8_t _c  = sugi_gfx_getcolor();
+  uint8_t sox = (s % 16) * 4;
+  uint8_t soy = (s / 16) * 8;
+
+  for (uint8_t sx = 0; sx < 8; sx += 2)
+  {
+    for (uint8_t sy = 0; sy < 8; sy++)
+    {
+      uint32_t off = sox + sx / 2 + soy * 64 + sy * 64;
+      uint8_t sc1 = *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + off) >> 4 & 0x0F;
+      uint8_t sc2 = *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + off) & 0x0F;
+      sugi_gfx_spr_pset_internal(x + sx,     y + sy, sc1);
+      sugi_gfx_spr_pset_internal(x + sx + 1, y + sy, sc2);
+    }
+  }
+
+  // setting a color back
+  sugi_gfx_setcolor(_c);
+}
+
+
+void sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in)
+{
+  c_in %= 16;
+  // 128x128 spritesheet
+  if (x < 0 || x >= 128 || y < 0 || y >= 128)
+    return;
+
+  uint8_t offset = (x % 2 == 0) ? 4 : 0;
+  c_in = *(sugi_memory_ptr + SUGI_MEM_PAL_DRAW_PTR + c_in);
+  *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) &= 0x0F << (4 - offset);
+  *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) |= c_in << offset;
+}
 /*
   uint8_t palt_mem_off = c_in / 8;
   // uint8_t c_palt = c_in;
-  // c_palt -= mem_off * 8;
+  // c_palt -= mem_off * 8;>
 
-  // if a color is transparent 
+  // if a color is transparent
   if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_in - mem_off * 8)) & 0x01 == 0)
     return 0;
 */
-
-

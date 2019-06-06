@@ -13,7 +13,7 @@ static uint32_t sugi_delta_ticks   = 0;
 void sugi_sdl_gl_init_internal(void)
 {
   sugi_delta_ticks = SDL_GetTicks();
-  SDL_Init(SDL_INIT_EVERYTHING); 
+  SDL_Init(SDL_INIT_EVERYTHING);
 
   // Setting up SDL Window
   sugi_main_window = SDL_CreateWindow(
@@ -68,30 +68,30 @@ void sugi_sdl_delay_internal()
 void sugi_set_init(void (*f)(void))
 { sugi_init_func = f; }
 
-void sugi_set_update(void (*f)(void)) 
+void sugi_set_update(void (*f)(void))
 { sugi_update_func = f; }
 
-void sugi_set_draw(void (*f)(void))   
+void sugi_set_draw(void (*f)(void))
 { sugi_draw_func = f; }
 
-void sugi_call_init_internal(void)    
+void sugi_call_init_internal(void)
 { sugi_init_func(); }
 
-void sugi_call_update_internal(void)  
+void sugi_call_update_internal(void)
 { sugi_update_func(); }
 
-void sugi_call_draw_internal(void)    
+void sugi_call_draw_internal(void)
 { sugi_draw_func(); }
-  
+
 
 // Initailizing SDL, OpenGL, creating a window etc.
-void sugi_core_init(void) 
+void sugi_core_init(void)
 {
   sugi_sdl_gl_init_internal();
   sugi_gl_init_texture_internal();
   sugi_gl_set_viewport_internal(SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT, 0, 0);
 
-  const GLuint shader = sugi_gl_compile_shader_internal();  
+  const GLuint shader = sugi_gl_compile_shader_internal();
   glUseProgram(sugi_gl_program);
 
   sugi_draw_buffer_ptr = &sugi_draw_buffer;
@@ -132,7 +132,6 @@ void sugi_core_run(void)
         break;
       }
     }
-
     // TODO: Add game input polling here
     sugi_call_update_internal();
     sugi_call_draw_internal();
@@ -143,4 +142,3 @@ void sugi_core_run(void)
 
   sugi_sdl_gl_deinit_internal();
 }
-

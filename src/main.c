@@ -4,10 +4,10 @@
 
 static int x, w, y, h, xs, ys;
 
-void test_init(void) 
+void test_init(void)
 {
-  x  = 28; 
-  w  = 8;
+  x  = 28;
+  w  = 16;
   y  = 28;
   h  = 8;
   xs = 1;
@@ -15,7 +15,7 @@ void test_init(void)
 }
 
 
-void test_update(void) 
+void test_update(void)
 {
   x += xs;
   y += ys;
@@ -44,9 +44,10 @@ void test_update(void)
 }
 
 
-void test_draw() 
+void test_draw()
 {
   sugi_gfx_pal_reset();
+  sugi_gfx_palt_reset();
   sugi_gfx_clear(0);
 
   for (int i = 0; i < 8; i++)
@@ -58,7 +59,7 @@ void test_draw()
     sugi_gfx_pset(i,  63, 7);
     sugi_gfx_pset(i, 127, 7);
   }
-  
+
   sugi_gfx_clip(16, 16, 64, 64);
   sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 7);
   sugi_gfx_clip_reset();
@@ -67,6 +68,34 @@ void test_draw()
   sugi_gfx_rect(32, 16,  92,  48, 0, 1);
   sugi_gfx_rect(40, 24,  84,  40, 1, 2);
   sugi_gfx_circ(64, 64,   8,   1, 6);
+
+  for (int i = 0; i < 8; i++)
+    sugi_gfx_sset(i, i, 7);
+
+  sugi_gfx_sset(8,  0, 5);
+  sugi_gfx_sset(16, 0, 4);
+  sugi_gfx_sset(24, 0, 6);
+
+  sugi_gfx_sset(2, 18, 7);
+  sugi_gfx_sset(5, 18, 7);
+  sugi_gfx_sset(2, 22, 7);
+  sugi_gfx_sset(3, 22, 7);
+  sugi_gfx_sset(4, 22, 7);
+  sugi_gfx_sset(5, 22, 7);
+  sugi_gfx_sset(1, 21, 7);
+  sugi_gfx_sset(6, 21, 7);
+
+  sugi_gfx_clear(1);
+  for (int s = 0; s < 256; s++)
+  {
+    if (s == 32)
+    {
+      sugi_gfx_palt(7,0);
+      sugi_gfx_palt(0,1);
+    }
+    sugi_gfx_spr(s, 16 + (s % 16) * 8, (s / 16) * 8);
+    sugi_gfx_palt_reset();
+  }
 }
 
 
@@ -82,6 +111,3 @@ int main (int argc, char *argv[])
 
   return 0;
 }
-
-
-

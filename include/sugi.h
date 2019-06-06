@@ -40,9 +40,9 @@ uint8_t *sugi_draw_buffer_ptr;
 // 0x0000 - 0x27FF screen data (4bit color)
 // 0x2800 - 0x2FFF some other variables
 //        |
-//        |-0x2800 current color & something else 
+//        |-0x2800 current color & something else
 //        |-0x2801 display mode
-//
+//        |-........
 // 0x3000 - 0x4FFF spritesheet 0-255
 // 0x5000 - 0x9FFF map 160x128
 // 0xA000 - ......
@@ -52,15 +52,21 @@ enum sugi_memory_table {
   SUGI_MEM_SCREEN_PTR     = 0x0000,
   // DRAW STATE
   SUGI_MEM_COLOR_PTR      = 0x2800,
-  SUGI_MEM_DISP_MODE_PTR  = 0x2801,  
+  SUGI_MEM_DISP_MODE_PTR  = 0x2801,
   SUGI_MEM_CAMERA_X_PTR   = 0x2802,
   SUGI_MEM_CAMERA_Y_PTR   = 0x2806,
   SUGI_MEM_CLIP_PTR       = 0x280A, // 0x280B, 0x280C, 0x280D
   SUGI_MEM_PAL_DRAW_PTR   = 0x280E, // 0x280F .. 0x281D
   SUGI_MEM_PAL_SCREEN_PTR = 0x281E, // 0x281F .. 0x282D
   SUGI_MEM_PALT_PTR       = 0x282E, // 0x282F
-  SUGI_MEM_PALT_SET_PTR   = 0x2830, 
-                      //  = 0x2831,
+  SUGI_MEM_PALT_SET_PTR   = 0x2830,
+  SUGI_MEM_FILLP_PTR      = 0x2831,
+  SUGI_MEM_CURSOR_PTR     = 0x2833,
+                       // = 0x2835,
+  SUGI_MEM_SPRSHEET_PTR   = 0x3000, // size = 0x2000
+                       // = 0x5000,
+  SUGI_MEM_MAPSHEET_PTR   = 0x5000, // size = 0x5000  [128-255] [0-127]
+                       // = 0xA000,
 };
 
 // uint8_t sugi_display_mode;
@@ -68,7 +74,7 @@ static const uint32_t sugi_memory_screen_size =
                       (SUGI_RENDER_WIDTH / 2) * SUGI_RENDER_HEIGHT;
 
 //                   0x10000   // 0x0000 -> 0xFFFF   64kB
-//                   0x18000   // 0x0000 -> 0x17FFF  96kB 
+//                   0x18000   // 0x0000 -> 0x17FFF  96kB
 uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
@@ -82,7 +88,7 @@ void (*sugi_draw_func)(void);
 
 /* Functions */
 void sugi_core_init(void);             /* Main initialization */
-void sugi_core_mem_init(void);         /* Memory initialization */  
+void sugi_core_mem_init(void);         /* Memory initialization */
 void sugi_core_run(void);              /* Runs an engine */
 void sugi_set_init(void (*f)(void));   /* Sets custom Init func */
 void sugi_set_update(void (*f)(void)); /* Sets custom Update func */
@@ -136,6 +142,10 @@ void    sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2);
 void    sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode);
 void    sugi_gfx_palt_reset(void);
 void    sugi_gfx_palt(uint8_t c, uint8_t t);
+void    sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in);
+void    sugi_gfx_spr(uint8_t s, int32_t x, int32_t y);
+void    sugi_gfx_sset_no_col(int32_t x, int32_t t);
+void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
 
 
 /* SHADERS ********************************************************/

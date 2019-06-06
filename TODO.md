@@ -23,10 +23,10 @@
   * `sugi_gfx_sspr`       (Draws a part of a spritesheet)
   * `sugi_gfx_palt`       (Palette transparency for sprites)
   * `sugi_gfx_print`      (Prints a text)
-  * `sugi_gfx_fillp`      (Sets a fill pattern mask)
+  * `sugi_gfx_fillp`      (Sets a fill pattern mask (16bit))
   * `sugi_gfx_sget`       (Gets a pixel from a spritesheet)
   * `sugi_gfx_sset`       (Sets a pixel in a spritesheet)
-  * `sugi_gfx_cursor`     (Sets position of a print command)
+  * `sugi_gfx_cursor`     (Sets position of a print command (16bit))
   * `sugi_gfx_flip`   ??? (Flips a screen and a render buffer )
   * `sugi_gfx_tri`    ??? (Draws a triangle)
 - Implement map
@@ -37,5 +37,3 @@
 - Terminal emulator
 - Text editor
 - Carts
-
-
