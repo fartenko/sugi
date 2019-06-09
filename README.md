@@ -1,6 +1,6 @@
 # sugi
 A fantasy console inspired by pico8.
 
-#### Dependencies
+### Dependencies
 * `libsdl2-2.0`
 * `libglew2.0`

@@ -97,7 +97,7 @@ int8_t sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out)
     return 0;
 
   uint8_t offset = (x % 2 == 0) ? 4 : 0;
-  *c_out = (*(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) >> offset) & 0xf;
+  *c_out = (*(sugi_memory_ptr + x / 2 + y * SUGI_RENDER_WIDTH / 2) >> offset) & 0xF;
   return 1;
 }
 
@@ -485,12 +485,17 @@ void sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in)
   *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) &= 0x0F << (4 - offset);
   *(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) |= c_in << offset;
 }
-/*
-  uint8_t palt_mem_off = c_in / 8;
-  // uint8_t c_palt = c_in;
-  // c_palt -= mem_off * 8;>
 
-  // if a color is transparent
-  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_in - mem_off * 8)) & 0x01 == 0)
+
+int8_t sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out)
+{
+  if (x < 0 || x >= 128 || y < 0 || y >= 128)
+  {
+    *c_out = 0;
     return 0;
-*/
+  }
+
+  uint8_t offset = (x % 2 == 0) ? 4 : 0;
+  *c_out = (*(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) >> offset) & 0xF;
+  return 1;
+}

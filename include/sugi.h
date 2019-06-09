@@ -146,6 +146,7 @@ void    sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in);
 void    sugi_gfx_spr(uint8_t s, int32_t x, int32_t y);
 void    sugi_gfx_sset_no_col(int32_t x, int32_t t);
 void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
+int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
 
 
 /* SHADERS ********************************************************/

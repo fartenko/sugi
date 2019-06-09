@@ -72,6 +72,7 @@ void test_draw()
   for (int i = 0; i < 8; i++)
     sugi_gfx_sset(i, i, 7);
 
+  sugi_gfx_sset(0,  0, 1);
   sugi_gfx_sset(8,  0, 5);
   sugi_gfx_sset(16, 0, 4);
   sugi_gfx_sset(24, 0, 6);
@@ -85,7 +86,10 @@ void test_draw()
   sugi_gfx_sset(1, 21, 7);
   sugi_gfx_sset(6, 21, 7);
 
-  sugi_gfx_clear(1);
+  uint8_t c00;
+  sugi_gfx_sget(0, 0, &c00);
+
+  sugi_gfx_clear(c00);
   for (int s = 0; s < 256; s++)
   {
     if (s == 32)
