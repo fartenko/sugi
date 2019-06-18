@@ -12,28 +12,38 @@ static uint32_t sugi_delta_ticks   = 0;
 /* SDL and OpenGL Functions ***********************************************************/
 void sugi_sdl_gl_init_internal(void)
 {
-  sugi_delta_ticks = SDL_GetTicks();
+  sugi_delta_ticks = 0;  // SDL_GetTicks();
   SDL_Init(SDL_INIT_EVERYTHING);
-
+  
   // Setting up SDL Window
   sugi_main_window = SDL_CreateWindow(
       "sugi",
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_CENTERED,
+      SDL_WINDOWPOS_CENTERED,
       SUGI_RENDER_WIDTH,
       SUGI_RENDER_HEIGHT,
       SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
     );
+  // Resizing a window
   SDL_SetWindowSize(sugi_main_window, SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT);
+  // Creating OpenGL context
   sugi_main_gl_context = SDL_GL_CreateContext(sugi_main_window);
-
-  // Setting up OpenGL
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  // Setting up OpenGL Attributes
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  // Setting Vsync
   SDL_GL_SetSwapInterval(SUGI_USE_VSYNC);
-  printf("%d", SUGI_USE_VSYNC);
+  
+  int32_t gl_major_version = 0;
+  int32_t gl_minor_version = 0;
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_version);
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &gl_minor_version);
+  // Print some information
+  printf("VSync: %d\n", SUGI_USE_VSYNC);
+  printf("GL Context version: %d.%d\n", gl_major_version, gl_minor_version);
+  printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
   // glewExperimental is probably needed to work on Windows
   glewExperimental = GL_TRUE;

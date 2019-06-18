@@ -19,6 +19,7 @@ enum sugi_config {
   SUGI_RENDER_WIDTH  = 160, // 160, // 224, // 224, // 224,
   SUGI_RENDER_HEIGHT = 128, // 128, // 144, // 160, // 128,
   SUGI_USE_VSYNC     = 1,
+  SUGI_RESIZABLE     = 0,
   // GL_MAJOR_VERSION   = 3,
   // GL_MINOR_VERSION   = 2,
   // GL_USE_VSYNC       = 1,
@@ -154,8 +155,28 @@ const char *vert_shader_src[];
 const char *frag_shader_src[];
 
 
+/* INPUT **********************************************************/
+// * button input
+// * text input
+// * joystick/gamepad input
+//
 
-/*  *********/
 
+/* SOUND **********************************************************/
+// * sound playback
+// * mixers
+// * soundwaves
+// * sound and music creation
+//
+
+
+/* NETWORKING *****************************************************/
+// * multiplayer up to 4 PCs (local, when gamepads connected or net)
+// * connect to "lobby", when everyone ready, start the cart
+// * synchronize cart at startup???
+// * in multiplayer, everyone sends its input data, to update every-
+// -one else (e.g. P1 moved left, left button will be pressed-
+// - for P1 at his PC, and "pressed" at P2,P3,P4's PCs)
+//
 
 #endif
