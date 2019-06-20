@@ -86,6 +86,15 @@ void test_draw()
   sugi_gfx_sset(1, 21, 7);
   sugi_gfx_sset(6, 21, 7);
 
+  sugi_gfx_sset(2 + 8, 18, 9);
+  sugi_gfx_sset(5 + 8, 18, 9);
+  sugi_gfx_sset(2 + 8, 22, 9);
+  sugi_gfx_sset(3 + 8, 22, 9);
+  sugi_gfx_sset(4 + 8, 22, 9);
+  sugi_gfx_sset(5 + 8, 22, 9);
+  sugi_gfx_sset(1 + 8, 21, 9);
+  sugi_gfx_sset(6 + 8, 21, 9);
+
   uint8_t c00;
   sugi_gfx_sget(0, 0, &c00);
 
@@ -97,8 +106,16 @@ void test_draw()
       sugi_gfx_palt(7,0);
       sugi_gfx_palt(0,1);
     }
+    if (s == 33)
+    {
+      sugi_gfx_palt(9,0);
+      sugi_gfx_palt(0,1);
+      sugi_gfx_pal_no_mode(0,2);
+    }
+
     sugi_gfx_spr(s, 16 + (s % 16) * 8, (s / 16) * 8);
     sugi_gfx_palt_reset();
+    sugi_gfx_pal_reset();
   }
 }
 

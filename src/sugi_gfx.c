@@ -424,7 +424,7 @@ void sugi_gfx_palt(uint8_t c, uint8_t t)
   }
 
   uint8_t val = *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off);
-  t = (((((val >> c) & 0x1) == 0) ? t : ~t) & 0x1) << c;
+  t = ((((val >> c) & 0x1 == 0) ? t : ~t) & 0x1) << c;
   val ^= t;
   *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off) = val;
 }
@@ -438,7 +438,7 @@ void sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in)
     return;
 
   uint8_t palt_mem_off = c_pal / 8;
-  if (((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_pal - palt_mem_off * 8)) & 0x01) == 1)
+  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_pal - palt_mem_off * 8)) & 0x01 == 1)
      return;
 
   sugi_gfx_pset(x, y, c_in);
