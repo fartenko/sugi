@@ -158,9 +158,9 @@ void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
 int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
 // void sugi_gfx_sspr(...);
 // draw map
-void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch); // + layer?
-void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s);
-uint8_t sugi_gfx_mset(int32_t cx, int32_t cy);
+// void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch);
+// void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s);
+// uint8_t sugi_gfx_mset(int32_t cx, int32_t cy);
 
 
 /* SHADERS ********************************************************/

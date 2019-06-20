@@ -33,6 +33,11 @@ $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "CC\t"$<
 
+
+setup:
+	@mkdir $(BINDIR)
+	@mkdir $(OBJDIR)
+
 run:
 	@$(BINDIR)/$(TARGET)
 
