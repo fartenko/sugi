@@ -186,7 +186,6 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
   int32_t dy   = abs(y2 - y1);
   int32_t sy   = (y1 < y2) ? 1 : -1;
   int32_t err  = ((dx > dy) ? dx : dy) / 2;
-  int32_t err2 = 0;
 
   while (true)
   {
@@ -195,14 +194,14 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
     if (x1 == x2 && y1 == y2)
       break;
 
-    err2 = err;
+    int32_t err_tmp = err;
 
-    if (err2 > -dx)
+    if (err_tmp > -dx)
     {
       err -= dy;
       x1 += sx;
     }
-    if (err2 < dy)
+    if (err_tmp < dy)
     {
       err += dx;
       y1 += sy;
@@ -425,7 +424,7 @@ void sugi_gfx_palt(uint8_t c, uint8_t t)
   }
 
   uint8_t val = *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off);
-  t = ((((val >> c) & 0x1 == 0) ? t : ~t) & 0x1) << c;
+  t = (((((val >> c) & 0x1) == 0) ? t : ~t) & 0x1) << c;
   val ^= t;
   *(sugi_memory_ptr + SUGI_MEM_PALT_PTR + mem_off) = val;
 }
@@ -439,7 +438,7 @@ void sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in)
     return;
 
   uint8_t palt_mem_off = c_pal / 8;
-  if ((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_pal - palt_mem_off * 8)) & 0x01 == 1)
+  if (((*(sugi_memory_ptr + SUGI_MEM_PALT_PTR + palt_mem_off) >> (c_pal - palt_mem_off * 8)) & 0x01) == 1)
      return;
 
   sugi_gfx_pset(x, y, c_in);
@@ -448,8 +447,8 @@ void sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in)
 
 void sugi_gfx_spr(uint8_t s, int32_t x, int32_t y)
 {
-  if (s < 0 || s >= 256)
-    return;
+  // if (s < 0 || s >= 256)
+  //   return;
 
   // getting a color, to set it back to original
   uint8_t _c  = sugi_gfx_getcolor();

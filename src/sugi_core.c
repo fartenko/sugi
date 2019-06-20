@@ -101,7 +101,9 @@ void sugi_core_init(void)
   sugi_gl_init_texture_internal();
   sugi_gl_set_viewport_internal(SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT, 0, 0);
 
-  const GLuint shader = sugi_gl_compile_shader_internal();
+  // const GLuint shader = sugi_gl_compile_shader_internal();
+  // compiles to sugi_gl_program
+  sugi_gl_compile_shader_internal();
   glUseProgram(sugi_gl_program);
 
   sugi_draw_buffer_ptr = &sugi_draw_buffer;
