@@ -15,16 +15,12 @@
 /* CONFIG VALUES **************************************************/
 enum sugi_config {
   SUGI_SCREEN_WIDTH  = 480,
-  SUGI_SCREEN_HEIGHT = 384, // ^               ^       ^
-  SUGI_RENDER_WIDTH  = 160, // 160, // 224, // 224, // 224,
-  SUGI_RENDER_HEIGHT = 128, // 128, // 144, // 160, // 128,
+  SUGI_SCREEN_HEIGHT = 384,
+  SUGI_RENDER_WIDTH  = 160,
+  SUGI_RENDER_HEIGHT = 128,
   SUGI_USE_VSYNC     = 1,
   SUGI_RESIZABLE     = 0,
-  // GL_MAJOR_VERSION   = 3,
-  // GL_MINOR_VERSION   = 2,
-  // GL_USE_VSYNC       = 1,
 };
-
 
 
 /* CORE ***********************************************************/
@@ -66,9 +62,13 @@ enum sugi_memory_table {
                        // = 0x2835,
   SUGI_MEM_SPRSHEET_PTR   = 0x3000, // size = 0x2000
                        // = 0x5000,
-  SUGI_MEM_MAPSHEET_PTR   = 0x5000, // size = 0x5000  [128-255] [0-127]
+  SUGI_MEM_MAPSHEET_PTR   = 0x5000, // size = 0x5000
                        // = 0xA000,
 };
+
+// Regarding map:
+// sprite 0 is a transparent sprite in map
+// optimal mem_set for screen to spritescheet is memset(0x7800,0x0000,0x2800)
 
 // uint8_t sugi_display_mode;
 static const uint32_t sugi_memory_screen_size =
@@ -117,14 +117,19 @@ void sugi_gl_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128
 
 
 /* GRAPHICS *******************************************************/
+// color manipulation
 void    sugi_gfx_setcolor(uint8_t c_in);
 uint8_t sugi_gfx_getcolor(void);
+// pixel get and pixel set
 int8_t  sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in);
 int8_t  sugi_gfx_pset_no_col(int32_t x, int32_t y);
 int8_t  sugi_gfx_pget(int32_t x, int32_t y, uint8_t *c_out);
+// camera position
 void    sugi_gfx_camera(int32_t x, int32_t y);
+// clear screen
 void    sugi_gfx_clear(uint8_t c);
 void    sugi_gfx_clear_no_col(void);
+// draw shapes
 void    sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in);
 void    sugi_gfx_line_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 void    sugi_gfx_hline(int32_t x1, int32_t x2, int32_t y, uint8_t c_in);
@@ -135,19 +140,27 @@ void    sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_
 void    sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill);
 void    sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
 float   sugi_gfx_circ_turnatan2_internal(float y, float x);
+// clip drawing region
 void    sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void    sugi_gfx_clip_reset(void);
 void    sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+// palette manipulation
 void    sugi_gfx_pal_reset(void);
 void    sugi_gfx_pal_no_mode(uint8_t c1, uint8_t c2);
 void    sugi_gfx_pal(uint8_t c1, uint8_t c2, uint8_t mode);
 void    sugi_gfx_palt_reset(void);
 void    sugi_gfx_palt(uint8_t c, uint8_t t);
+// draw sprites and sprite manipulation
 void    sugi_gfx_spr_pset_internal(int32_t x, int32_t y, uint8_t c_in);
 void    sugi_gfx_spr(uint8_t s, int32_t x, int32_t y);
 void    sugi_gfx_sset_no_col(int32_t x, int32_t t);
 void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
 int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
+// void sugi_gfx_sspr(...);
+// draw map
+void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch); // + layer?
+void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s);
+uint8_t sugi_gfx_mset(int32_t cx, int32_t cy);
 
 
 /* SHADERS ********************************************************/

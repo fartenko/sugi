@@ -499,3 +499,26 @@ int8_t sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out)
   *c_out = (*(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) >> offset) & 0xF;
   return 1;
 }
+
+
+void sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch)
+{
+  // implement here
+  
+}
+
+
+void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s)
+{
+  // implement here
+  
+}
+
+
+uint8_t sugi_gfx_mset(int32_t cx, int32_t cy)
+{
+  // implement here
+
+  return 0;
+}
+
