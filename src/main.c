@@ -2,8 +2,10 @@
 #include <stdio.h>
 
 
+#pragma region GAME
 static int x, w, y, h, xs, ys;
 static int px, py, pw, ph;
+
 
 void test_init(void)
 {
@@ -124,6 +126,7 @@ void test_draw()
     sugi_gfx_pal_reset();
   }
 }
+#pragma endregion GAME
 
 
 int main (int argc, char *argv[])

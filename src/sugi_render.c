@@ -112,7 +112,8 @@ void sugi_renderer_draw_internal(void)
   // sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
   SDL_GL_SwapWindow(sugi_main_window);
 }
-#pragma endregion
+#pragma endregion RENDERER_FUNCTIONS
+
 
 #pragma region RENDER_MODES
 void sugi_render_mode_default_internal(uint32_t rw, uint32_t rh)
@@ -233,4 +234,4 @@ void sugi_render_mode_square_pico_internal(uint32_t rw, uint32_t rh)
     }
   }
 }
-#pragma endregion
+#pragma endregion RENDER_MODES

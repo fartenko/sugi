@@ -4,9 +4,6 @@
 #include "sugi.h"
 
 
-
-
-/* Sugi Functions */
 void sugi_core_set_init(void (*f)(void))
 { sugi_init_func = f; }
 
@@ -26,14 +23,13 @@ void sugi_call_draw_internal(void)
 { sugi_draw_func(); }
 
 
-/* Running SUGI */
 void sugi_core_run(void)
 {
   uint8_t  sugi_core_quit    = 0;
   uint32_t sugi_time_step_ms = 1000 / 60;
   uint32_t sugi_delta_ticks  = 0;
 
-  /* Initializing SDL and OpenGL */
+
   #pragma region INIT_SDL_GL
   // Initializing SDL
   sugi_delta_ticks = 0;
@@ -75,9 +71,9 @@ void sugi_core_run(void)
   glClear(GL_COLOR_BUFFER_BIT);
   // Drawing first frame
   SDL_GL_SwapWindow(sugi_main_window);
-  #pragma endregion
+  #pragma endregion INIT_SDL_GL
 
-  /* Initializing other stuff */
+
   #pragma region INIT_GL
   glTexImage2D(
       GL_TEXTURE_2D, 0, GL_ALPHA,
@@ -97,17 +93,17 @@ void sugi_core_run(void)
   glUseProgram(sugi_gl_program);
   // getting pointer to a draw buffer
   sugi_draw_buffer_ptr = &sugi_draw_buffer;
-  #pragma endregion
+  #pragma endregion INIT_GL
 
-  /* Initailizing virtual RAM */
+
   #pragma region INIT_RAM
   sugi_memory_ptr        = &sugi_memory;
   sugi_memory_screen_ptr = &sugi_memory;
   sugi_gfx_clip_reset();
   sugi_gfx_pal_reset();
-  #pragma endregion
+  #pragma endregion INIT_RAM
 
-  /* Game loop */
+
   #pragma region GAME_LOOP
   // Runs an ingame init function
   sugi_call_init_internal();
@@ -145,12 +141,12 @@ void sugi_core_run(void)
     SDL_Delay(delay);
     sugi_delta_ticks = SDL_GetTicks();
   }
-  #pragma endregion
+  #pragma endregion GAME_LOOP
 
-  /* Deiniitalizing SDL and OpenGL */
+
   #pragma region DEINIT_SDL_GL
   SDL_DestroyWindow(sugi_main_window);
   SDL_GL_DeleteContext(sugi_main_gl_context);
   SDL_Quit();
-  #pragma endregion
+  #pragma endregion DEINIT_SDL_GL
 }

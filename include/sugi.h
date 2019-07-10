@@ -16,7 +16,8 @@ enum sugi_config {
   SUGI_USE_VSYNC     = 1,
   SUGI_RESIZABLE     = 0,
 };
-#pragma endregion
+#pragma endregion CONFIG
+
 
 #pragma region CORE_VARIABLES
 /* SDL & GL variables */
@@ -34,7 +35,8 @@ void (*sugi_draw_func)(void);
 /* Shaders */
 const char *vert_shader_src[];
 const char *frag_shader_src[];
-#pragma endregion
+#pragma endregion CORE_VARIABLES
+
 
 #pragma region RAM
 /* Sugi RAM */
@@ -83,7 +85,8 @@ static const uint32_t sugi_memory_screen_size =
 uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
-#pragma endregion
+#pragma endregion RAM
+
 
 #pragma region CORE_FUNCTIONS
 void sugi_core_run(void);                   /* Runs an engine */
@@ -94,7 +97,8 @@ void sugi_core_set_draw(void (*f)(void));   /* Sets custom Draw func */
 void sugi_call_init_internal(void);         /* Calls Init Func */
 void sugi_call_update_internal(void);       /* Calls Update Func */
 void sugi_call_draw_internal(void);         /* Calls Draw Func */
-#pragma endregion
+#pragma endregion CORE_FUNCTIONS
+
 
 #pragma region RENDERER_FUNCTIONS
 void   sugi_renderer_gl_set_viewport_internal();   /* OpenGL Viewport Setup */
@@ -106,7 +110,8 @@ void sugi_render_mode_stretched_internal(uint32_t rw, uint32_t rh);    /* Horizo
 void sugi_render_mode_square_internal(uint32_t rw, uint32_t rh);       /* Square display mode */
 void sugi_render_mode_square_small_internal(uint32_t rw, uint32_t rh); /* 64x64 display mode */
 void sugi_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128x128 pico-8 display mode */
-#pragma endregion
+#pragma endregion RENDERER_FUNCTIONS
+
 
 #pragma region GFX_FUNCTIONS
 // color manipulation
@@ -152,7 +157,7 @@ int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
 // void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch);
 // void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s);
 // uint8_t sugi_gfx_mset(int32_t cx, int32_t cy);
-#pragma endregion
+#pragma endregion GFX_FUNCTIONS
 
 
 
