@@ -1,5 +1,5 @@
 #include "sugi.h"
-#include "palette.h"
+#include "sugi_palette.h"
 
 
 const char *vert_shader_src[] = {
@@ -16,8 +16,8 @@ const char *frag_shader_src[] = {
   "#version 130\n\
   uniform sampler2D text_in;\
   void main() {\
-    vec4 c  = texture2D(text_in, gl_TexCoord[0].st);\ 
-    float r = int(c.a * 2550) + 1;\ 
+    vec4 c  = texture2D(text_in, gl_TexCoord[0].st);\
+    float r = int(c.a * 2550) + 1;\
     if (r >= 0)   {c = vec4("SUGI_COLOR00");}\
     if (r >= 10)  {c = vec4("SUGI_COLOR01");}\
     if (r >= 20)  {c = vec4("SUGI_COLOR02");}\
@@ -37,5 +37,3 @@ const char *frag_shader_src[] = {
     gl_FragColor = c;\
   }"
 };
-
-

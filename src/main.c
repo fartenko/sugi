@@ -3,6 +3,7 @@
 
 
 static int x, w, y, h, xs, ys;
+static int px, py, pw, ph;
 
 void test_init(void)
 {
@@ -12,6 +13,11 @@ void test_init(void)
   h  = 8;
   xs = 1;
   ys = 1;
+  // player variables
+  px = 32;
+  py = 32;
+  pw = 8;
+  ph = 8;
 }
 
 
@@ -122,11 +128,9 @@ void test_draw()
 
 int main (int argc, char *argv[])
 {
-  sugi_core_init();
-  sugi_core_mem_init();
-  sugi_set_init(test_init);
-  sugi_set_draw(test_draw);
-  sugi_set_update(test_update);
+  sugi_core_set_init(test_init);
+  sugi_core_set_draw(test_draw);
+  sugi_core_set_update(test_update);
   sugi_core_run();
 
   return 0;

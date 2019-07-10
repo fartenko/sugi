@@ -3,7 +3,6 @@
 #include <string.h>
 #include <math.h>
 #include "sugi.h"
-#include "bool.h"
 
 
 // Sets a current color to draw pixels with
@@ -187,7 +186,7 @@ void sugi_gfx_line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t c_in)
   int32_t sy   = (y1 < y2) ? 1 : -1;
   int32_t err  = ((dx > dy) ? dx : dy) / 2;
 
-  while (true)
+  while (1)
   {
     sugi_gfx_pset(x1, y1, c_in);
 
@@ -247,17 +246,6 @@ void sugi_gfx_rect_no_col(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int8_t
   uint8_t c_in = sugi_gfx_getcolor();
   sugi_gfx_rect(x1, y1, x2, y2, fill, c_in);
 }
-
-
-// float sugi_gfx_circ_turnatan2_internal(float y, float x)
-// {
-//   #define PI 3.14159265
-//
-//   float rad = atan2f(y, x);
-//   float ang = rad * (180.0 / PI);
-//   float res = (ang < 0) ? 360.0 + ang : ang;
-//   return res / 360.0;
-// }
 
 
 // Draws a circle segment
@@ -498,4 +486,3 @@ int8_t sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out)
   *c_out = (*(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) >> offset) & 0xF;
   return 1;
 }
-
