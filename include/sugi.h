@@ -103,7 +103,7 @@ void sugi_call_draw_internal(void);         /* Calls Draw Func */
 #pragma region RENDERER_FUNCTIONS
 void   sugi_renderer_gl_set_viewport_internal();   /* OpenGL Viewport Setup */
 GLuint sugi_renderer_gl_compile_shader_internal(); /* Shader Compilation */
-void   sugi_renderer_draw_internal();         /* Render to Screen */
+void   sugi_renderer_draw_internal();              /* Render to Screen */
 /* Display modes */
 void sugi_render_mode_default_internal(uint32_t rw, uint32_t rh);      /* Default display mode */
 void sugi_render_mode_stretched_internal(uint32_t rw, uint32_t rh);    /* Horizontally stretched mode */
@@ -152,6 +152,10 @@ void    sugi_gfx_spr(uint8_t s, int32_t x, int32_t y);
 void    sugi_gfx_sset_no_col(int32_t x, int32_t t);
 void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
 int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
+void    sugi_gfx_sspr(int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t x, int32_t y, int32_t w, int32_t h);
+
+void    sugi_gfx_flip();
+
 // void sugi_gfx_sspr(...);
 // draw map
 // void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch);

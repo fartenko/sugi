@@ -14,13 +14,13 @@ void sugi_core_set_draw(void (*f)(void))
 { sugi_draw_func = f; }
 
 void sugi_call_init_internal(void)
-{ sugi_init_func(); }
+{ if (sugi_init_func) sugi_init_func(); }
 
 void sugi_call_update_internal(void)
-{ sugi_update_func(); }
+{ if (sugi_update_func) sugi_update_func(); }
 
 void sugi_call_draw_internal(void)
-{ sugi_draw_func(); }
+{ if (sugi_draw_func) sugi_draw_func(); }
 
 
 void sugi_core_run(void)

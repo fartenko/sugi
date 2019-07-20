@@ -22,7 +22,7 @@
     - ~~`sugi_gfx_clip`~~ (Clips a render region)
     - ~~`sugi_gfx_pal`~~ (Palette swap function)
     - ~~`sugi_gfx_spr`~~ (Draws a sprite)
-    - `sugi_gfx_sspr` (Draws a part of a spritesheet)
+    - ~~`sugi_gfx_sspr`~~ (Draws a part of a spritesheet)
     - ~~`sugi_gfx_palt`~~ (Palette transparency for sprites)
     - `sugi_gfx_print` (Prints a text)
     - `sugi_gfx_fillp` (Sets a fill pattern mask (16bit))

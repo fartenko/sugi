@@ -3,8 +3,13 @@
 
 
 #pragma region GAME
+void test_draw();
+void test_init();
+void test_update();
+
 static int x, w, y, h, xs, ys;
 static int px, py, pw, ph;
+double t = 0;
 
 
 void test_init(void)
@@ -49,6 +54,8 @@ void test_update(void)
     y = 0;
     ys *= -1;
   }
+
+  t += 1.0 / 60.0;
 }
 
 
@@ -125,6 +132,9 @@ void test_draw()
     sugi_gfx_palt_reset();
     sugi_gfx_pal_reset();
   }
+
+  sugi_gfx_sspr(0, 16, 8, 8, 
+                16, 24, 16 + cos(t * 4) * 8, 16 + sin(t * 4) * 8);
 }
 #pragma endregion GAME
 

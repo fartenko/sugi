@@ -486,3 +486,35 @@ int8_t sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out)
   *c_out = (*(sugi_memory_ptr + SUGI_MEM_SPRSHEET_PTR + x / 2 + y * 64) >> offset) & 0xF;
   return 1;
 }
+
+
+// sspr
+// get all the pixels in a selected box
+// then `stretch` or `squish` them depending on the box it is being drawn to
+
+void sugi_gfx_sspr(int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t x, int32_t y, int32_t w, int32_t h)
+{
+  // pixels = memalloc(); ??? not needed???
+  // for x and y ...
+  // ... get needed sx and sy pixel
+  // ... then put the pixel
+  
+  for (int32_t _x = 0; _x < w; _x++)
+  {
+    for (int32_t _y = 0; _y < h; _y++)
+    {
+      uint8_t c = 0;
+      int32_t _sx = floorf(_x * ((float)sw / (float)w));
+      int32_t _sy = floorf(_y * ((float)sh / (float)h));
+      sugi_gfx_sget(sx + _sx, sy + _sy, &c);
+      // sugi_gfx_sset(x + _x, y + _y, c);
+      if (c == 0) c = 3;
+      sugi_gfx_spr_pset_internal(x + _x, y + _y, c);
+    }
+  }
+}
+ 
+
+void sugi_gfx_flip() { sugi_renderer_draw_internal(); }
+
+
