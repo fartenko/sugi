@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include "sugi.h"
+#include "sugi_font.h"
 
 
 // Sets a current color to draw pixels with
@@ -48,8 +49,8 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
   x -= sugi_gfx_camera_x;
   y -= sugi_gfx_camera_y;
 
-  // if (x < 0 || x >= SUGI_RENDER_WIDTH ||
-  //     y < 0 || y >= SUGI_RENDER_HEIGHT)
+  //if (x < 0 || x >= SUGI_RENDER_WIDTH ||
+  //    y < 0 || y >= SUGI_RENDER_HEIGHT)
   if (x < sugi_gfx_clip_x1 || x >= sugi_gfx_clip_x2 || // if we're out of bound of
       y < sugi_gfx_clip_y1 || y >= sugi_gfx_clip_y2)   //   a clip area.
     return 0;
@@ -514,6 +515,33 @@ void sugi_gfx_sspr(int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t x, in
   }
 }
  
+
+void sugi_gfx_print(char *str, int32_t x, int32_t y, uint8_t c)
+{
+  sugi_gfx_setcolor(c);
+  int32_t ox = x, oy = y;
+  int32_t slen = strlen(str);
+
+  for (int i = 0; i < slen; i++)
+  {
+    int ascii = (int)str[i];
+    
+    for (int y = 0; y < SUGI_FONT_HEIGHT; y++)
+    {
+      char c = SUGI_FONT[ascii][y];
+      
+      for (int x = 0; x < SUGI_FONT_WIDTH; x++)
+      {
+        if (c & 0x01 != 0)
+          sugi_gfx_pset_no_col(ox - x + SUGI_FONT_WIDTH - 1, oy + y);
+        c = c >> 1;
+      }
+    }
+
+    ox += SUGI_FONT_WIDTH;
+  }
+}
+
 
 void sugi_gfx_flip() { sugi_renderer_draw_internal(); }
 

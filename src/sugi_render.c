@@ -70,19 +70,23 @@ void sugi_renderer_draw_internal(void)
 
   // Reading 4-bit screen data from ram and converting ...
   // ... it to 8 bit color for OpenGL 8-bit Texture
-  uint8_t sugi_display_mode = *(sugi_memory_ptr + SUGI_MEM_DISP_MODE_PTR);
+  //uint8_t sugi_display_mode = *(sugi_memory_ptr + SUGI_MEM_DISP_MODE_PTR);
+  uint8_t sugi_display_mode = 0;//2;
   switch(sugi_display_mode)
   {
     case 1:
       sugi_render_mode_stretched_internal(rw, rh);
       break;
     case 2:
-      sugi_render_mode_square_small_internal(rw, rh);
+      sugi_render_mode_zoomed_internal(rw, rh);
       break;
     case 3:
-      sugi_render_mode_square_pico_internal(rw, rh);
+      sugi_render_mode_square_small_internal(rw, rh);
       break;
     case 4:
+      sugi_render_mode_square_pico_internal(rw, rh);
+      break;
+    case 5:
       sugi_render_mode_square_internal(rw, rh);
       break;
     default:
@@ -109,7 +113,7 @@ void sugi_renderer_draw_internal(void)
 
   // TODO: Move it to the resized callback
   // Resizing and moving a viewport every time we resize or draw the screen
-  // sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
+   sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
   SDL_GL_SwapWindow(sugi_main_window);
 }
 #pragma endregion RENDERER_FUNCTIONS
@@ -155,6 +159,38 @@ void sugi_render_mode_stretched_internal(uint32_t rw, uint32_t rh)
       *(sugi_draw_buffer_ptr + i * 4 + 1 - shift_back) = color1;
       *(sugi_draw_buffer_ptr + i * 4 + 2 - shift_back) = color2;
       *(sugi_draw_buffer_ptr + i * 4 + 3 - shift_back) = color2;
+    }
+  }
+}
+
+
+void sugi_render_mode_zoomed_internal(uint32_t rw, uint32_t rh)
+{
+  for (int i = 0; i < sugi_memory_screen_size / 2; i++)
+  {
+    if (i % (rw / 2) < (rw / 4))
+    {
+      // color1, color2: 4 bit colors
+      // shift_back:     offsets some adresses back to ..
+      //             .. fill the gaps of unrendered pixels
+      uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
+      uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+      // shifting back to skip second half of a screen
+      int32_t shift_back = (i / (rw / 2)) * rw;
+      int32_t zoom_off = (rw / 2) * (int)(i / (rw / 4));
+
+      // applying a screen palette
+      color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
+      color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
+      // putting 'stretched' pixels
+      *(sugi_draw_buffer_ptr + i * 4 + 0 - shift_back + zoom_off) = color1;
+      *(sugi_draw_buffer_ptr + i * 4 + 1 - shift_back + zoom_off) = color1;
+      *(sugi_draw_buffer_ptr + i * 4 + 2 - shift_back + zoom_off) = color2;
+      *(sugi_draw_buffer_ptr + i * 4 + 3 - shift_back + zoom_off) = color2;
+      *(sugi_draw_buffer_ptr + i * 4 + 0 - shift_back + zoom_off + rw) = color1;
+      *(sugi_draw_buffer_ptr + i * 4 + 1 - shift_back + zoom_off + rw) = color1;
+      *(sugi_draw_buffer_ptr + i * 4 + 2 - shift_back + zoom_off + rw) = color2;
+      *(sugi_draw_buffer_ptr + i * 4 + 3 - shift_back + zoom_off + rw) = color2;
     }
   }
 }

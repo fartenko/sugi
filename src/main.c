@@ -14,6 +14,9 @@ double t = 0;
 
 void test_init(void)
 {
+  printf("sugi_memory_screen_size: %d, 0x%x\n\r", 
+      sugi_memory_screen_size, sugi_memory_screen_size);
+
   x  = 28;
   w  = 16;
   y  = 28;
@@ -114,6 +117,12 @@ void test_draw()
   sugi_gfx_sget(0, 0, &c00);
 
   sugi_gfx_clear(c00);
+  
+  for (int i = -256; i < 320; i+=8)
+  {
+    sugi_gfx_line(i, 0, i+256, 256, 0);
+  }
+
   for (int s = 0; s < 256; s++)
   {
     if (s == 32)
@@ -133,8 +142,12 @@ void test_draw()
     sugi_gfx_pal_reset();
   }
 
-  sugi_gfx_sspr(0, 16, 8, 8, 
+  sugi_gfx_sspr(0, 16, 8, 8,
                 16, 24, 16 + cos(t * 4) * 8, 16 + sin(t * 4) * 8);
+
+  sugi_gfx_print("int main(void){", 16,  96, 7);
+  sugi_gfx_print("  return 0;",     16, 103, 7);
+  sugi_gfx_print("}",               16, 112, 7);
 }
 #pragma endregion GAME
 

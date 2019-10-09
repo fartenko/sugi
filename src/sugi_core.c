@@ -41,7 +41,7 @@ void sugi_core_run(void)
       SDL_WINDOWPOS_CENTERED,
       SUGI_RENDER_WIDTH,
       SUGI_RENDER_HEIGHT,
-      SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
+      SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
   // Resizing a window
   SDL_SetWindowSize(sugi_main_window, SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT);

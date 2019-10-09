@@ -9,8 +9,8 @@
 
 #pragma region CONFIG
 enum sugi_config {
-  SUGI_SCREEN_WIDTH  = 480,
-  SUGI_SCREEN_HEIGHT = 384,
+  SUGI_SCREEN_WIDTH  = 320 + 16,
+  SUGI_SCREEN_HEIGHT = 256 + 16,
   SUGI_RENDER_WIDTH  = 160,
   SUGI_RENDER_HEIGHT = 128,
   SUGI_USE_VSYNC     = 1,
@@ -107,6 +107,7 @@ void   sugi_renderer_draw_internal();              /* Render to Screen */
 /* Display modes */
 void sugi_render_mode_default_internal(uint32_t rw, uint32_t rh);      /* Default display mode */
 void sugi_render_mode_stretched_internal(uint32_t rw, uint32_t rh);    /* Horizontally stretched mode */
+void sugi_render_mode_zoomed_internal(uint32_t rw, uint32_t rh);       /* 2x zoom */
 void sugi_render_mode_square_internal(uint32_t rw, uint32_t rh);       /* Square display mode */
 void sugi_render_mode_square_small_internal(uint32_t rw, uint32_t rh); /* 64x64 display mode */
 void sugi_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128x128 pico-8 display mode */
@@ -114,6 +115,8 @@ void sugi_render_mode_square_pico_internal(uint32_t rw, uint32_t rh);  /* 128x12
 
 
 #pragma region GFX_FUNCTIONS
+// calls a draw function
+void    sugi_gfx_flip();
 // color manipulation
 void    sugi_gfx_setcolor(uint8_t c_in);
 uint8_t sugi_gfx_getcolor(void);
@@ -153,16 +156,15 @@ void    sugi_gfx_sset_no_col(int32_t x, int32_t t);
 void    sugi_gfx_sset(int32_t x, int32_t y, uint8_t c_in);
 int8_t  sugi_gfx_sget(int32_t x, int32_t y, uint8_t *c_out);
 void    sugi_gfx_sspr(int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t x, int32_t y, int32_t w, int32_t h);
+// Printing text
+void    sugi_gfx_print(char *str, int32_t x, int32_t y, uint8_t c);
 
-void    sugi_gfx_flip();
-
-// void sugi_gfx_sspr(...);
 // draw map
+void    sugi_map_draw(uint8_t ox, uint8_t oy);
 // void    sugi_gfx_map(int32_t map_cx, int32_t map_cy, int32_t sx, int32_t sy, int32_t map_cw, int32_t map_ch);
 // void    sugi_gfx_mset(int32_t cx, int32_t cy, uint8_t s);
 // uint8_t sugi_gfx_mset(int32_t cx, int32_t cy);
 #pragma endregion GFX_FUNCTIONS
-
 
 
 /* INPUT **********************************************************/
@@ -177,6 +179,11 @@ void    sugi_gfx_flip();
 // * mixers
 // * soundwaves
 // * sound and music creation
+//
+
+
+/* GRAPHICS *******************************************************/
+// * text model (or ascii mode)
 //
 
 
