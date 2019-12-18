@@ -11,7 +11,7 @@ INCDIR = include
 CC     = gcc
 LINKER = gcc
 
-CFLAGS = -w -g -I./$(INCDIR)/
+CFLAGS = -w -g -I./$(INCDIR)/ -I/usr/include/lua5.3
 LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm -llua5.3
 
 # Linker flags:
