@@ -113,7 +113,7 @@ void sugi_renderer_draw_internal(void)
 
   // TODO: Move it to the resized callback
   // Resizing and moving a viewport every time we resize or draw the screen
-   sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
+  sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
   SDL_GL_SwapWindow(sugi_main_window);
 }
 #pragma endregion RENDERER_FUNCTIONS
@@ -125,8 +125,8 @@ void sugi_render_mode_default_internal(uint32_t rw, uint32_t rh)
   for (int i = 0; i < sugi_memory_screen_size; i++)
   {
     // we split a 8 bit value into two 4bit colors
-    uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
-    uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+    uint8_t color1 = *(sugi_memory_ptr + i) >> 4 & 0xf;
+    uint8_t color2 = *(sugi_memory_ptr + i) & 0xf;
     // applying a screen palette
     color1 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color1);
     color2 = *(sugi_memory + SUGI_MEM_PAL_SCREEN_PTR + color2);
@@ -147,8 +147,8 @@ void sugi_render_mode_stretched_internal(uint32_t rw, uint32_t rh)
       // color1, color2: 4 bit colors
       // shift_back:     offsets some adresses back to ..
       //             .. fill the gaps of unrendered pixels
-      uint8_t color1     = *(sugi_memory_ptr + i) >> 4 & 0xf;
-      uint8_t color2     = *(sugi_memory_ptr + i) & 0xf;
+      uint8_t color1 = *(sugi_memory_ptr + i) >> 4 & 0xf;
+      uint8_t color2 = *(sugi_memory_ptr + i) & 0xf;
       // shifting back to skip second half of a screen
       int32_t shift_back = (i / (rw / 2)) * rw;
       // applying a screen palette

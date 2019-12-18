@@ -1,6 +1,12 @@
 #include "sugi.h"
 #include <stdio.h>
 
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
+lua_State *L;
+
 
 #pragma region GAME
 void test_draw();
@@ -14,9 +20,6 @@ double t = 0;
 
 void test_init(void)
 {
-  printf("sugi_memory_screen_size: %d, 0x%x\n\r", 
-      sugi_memory_screen_size, sugi_memory_screen_size);
-
   x  = 28;
   w  = 16;
   y  = 28;
@@ -145,19 +148,55 @@ void test_draw()
   sugi_gfx_sspr(0, 16, 8, 8,
                 16, 24, 16 + cos(t * 4) * 8, 16 + sin(t * 4) * 8);
 
-  sugi_gfx_print("int main(void){", 16,  96, 7);
-  sugi_gfx_print("  return 0;",     16, 103, 7);
-  sugi_gfx_print("}",               16, 112, 7);
+  luaL_dostring(L, "lua_print('Hello from Lua!')");
+
+  // sugi_gfx_print("test\n\r\thello", 0, 0, 7);
 }
 #pragma endregion GAME
 
 
-int main (int argc, char *argv[])
+static int lua_print(lua_State *L)
 {
+  int n = lua_gettop(L);
+  
+  // for (int i = 1; i <= n; i++)
+  // {
+    
+  // }
+  
+  // char **str;
+
+  if (!lua_isstring(L, 1)){
+    lua_pushstring(L, "First argument must be a string!");
+    lua_error(L);
+  }
+
+  // lua_pushinteger()
+  sugi_gfx_print(lua_tostring(L, 1), 0, 0, 7);
+
+  return 1;
+}
+
+
+int main(int argc, char *argv[])
+{
+  L = luaL_newstate();
+
+  luaL_openlibs(L);
+  luaopen_base(L);
+  luaopen_table(L);
+  luaopen_io(L);
+  luaopen_string(L);
+  luaopen_math(L);
+
+  lua_register(L, "lua_print", lua_print);
+
   sugi_core_set_init(test_init);
   sugi_core_set_draw(test_draw);
   sugi_core_set_update(test_update);
   sugi_core_run();
+
+  lua_close(L);
 
   return 0;
 }

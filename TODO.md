@@ -24,7 +24,7 @@
     - ~~`sugi_gfx_spr`~~ (Draws a sprite)
     - ~~`sugi_gfx_sspr`~~ (Draws a part of a spritesheet)
     - ~~`sugi_gfx_palt`~~ (Palette transparency for sprites)
-    - `sugi_gfx_print` (Prints a text)
+    - ~~`sugi_gfx_print`~~ (Prints a text)
     - `sugi_gfx_fillp` (Sets a fill pattern mask (16bit))
     - ~~`sugi_gfx_sget`~~ (Gets a pixel from a spritesheet)
     - ~~`sugi_gfx_sset`~~ (Sets a pixel in a spritesheet)

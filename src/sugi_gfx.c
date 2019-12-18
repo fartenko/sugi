@@ -521,11 +521,31 @@ void sugi_gfx_print(char *str, int32_t x, int32_t y, uint8_t c)
   sugi_gfx_setcolor(c);
   int32_t ox = x, oy = y;
   int32_t slen = strlen(str);
+  int32_t orig_ox = ox;
 
+  printf("-----\n\r");
   for (int i = 0; i < slen; i++)
   {
     int ascii = (int)str[i];
     
+    // Tab case
+    if (ascii == 9){
+      ox += (SUGI_FONT_WIDTH + SUGI_FONT_LETER_SPACE) * SUGI_FONT_TAB_SIZE;
+      continue;
+    }
+    // NL case
+    if (ascii == 10){
+      oy += SUGI_FONT_HEIGHT;
+      continue;
+    }
+    // CR case
+    if (ascii == 13){
+      ox = orig_ox;
+      continue;
+    }
+
+    ascii += SUGI_FONT_ASCII_OFFSET;
+
     for (int y = 0; y < SUGI_FONT_HEIGHT; y++)
     {
       char c = SUGI_FONT[ascii][y];
@@ -533,12 +553,13 @@ void sugi_gfx_print(char *str, int32_t x, int32_t y, uint8_t c)
       for (int x = 0; x < SUGI_FONT_WIDTH; x++)
       {
         if (c & 0x01 != 0)
-          sugi_gfx_pset_no_col(ox - x + SUGI_FONT_WIDTH - 1, oy + y);
+          // sugi_gfx_pset_no_col(ox - x + SUGI_FONT_WIDTH - 1, oy + y);
+          sugi_gfx_pset_no_col(ox + y, oy + x + SUGI_FONT_HEIGHT_OFFSET);
         c = c >> 1;
       }
     }
 
-    ox += SUGI_FONT_WIDTH;
+    ox += SUGI_FONT_WIDTH + SUGI_FONT_LETER_SPACE;
   }
 }
 

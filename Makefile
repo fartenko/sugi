@@ -12,12 +12,16 @@ CC     = gcc
 LINKER = gcc
 
 CFLAGS = -w -g -I./$(INCDIR)/
-LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm
+LFLAGS = -lGL -lGLU -lGLEW -lSDL2 -lSDL2main -lm -llua5.3
 
 # Linker flags:
-# * -lGL -lGLU -lGLEW: GLEW libs
-# * -lSDL2 -lSDL2main: SDL2 libs
-# * -lm: math lib
+# * -lGL -lGLU -lGLEW : GLEW libs
+# * -lSDL2 -lSDL2main : SDL2 libs
+# * -lm : math lib
+# * -llualib5.2
+# * -lluar5.2
+# Include Flags
+# * -I/usr/include/lua5.2 : lua
 
 SOURCES  := $(wildcard $(SRCDIR)/*.c)
 INCLUDES := $(wildcard $(INCDIR)/*.h)
