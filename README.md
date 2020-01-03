@@ -10,13 +10,12 @@ Install needed dependencies (Ubuntu/Debian):
 sudo apt install libsdl2-dev libsdl2-2.0 libglew-dev libglew2.0 lua5.3 lua5.3-dev
 ```
 
-Build an executable:
+Build:
 
 ```
 git clone https://github.com/vbrydik/sugi
 cd sugi
-mkdir obj
-mkdir bin 
+make setup
 make 
 ```
 
