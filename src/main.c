@@ -31,7 +31,6 @@ void call_lua_tick(void)
 // Test draw function
 void test_draw()
 {
-  uint32_t t1 = SDL_GetTicks();
   sugi_gfx_pal_reset();
   sugi_gfx_palt_reset();
   sugi_gfx_clear(0);
@@ -118,7 +117,6 @@ void test_draw()
   luaL_dofile(L, "lua/print.lua");
 
   sugi_gfx_print("test\n\r\thello", 0, 0, 7);
-  uint32_t t2 = SDL_GetTicks();
 
 
   for (int i = 0; i < 8; i++)
