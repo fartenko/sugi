@@ -40,10 +40,17 @@ int8_t sugi_gfx_pset(int32_t x, int32_t y, uint8_t c_in)
                               *(sugi_memory_ptr + SUGI_MEM_CAMERA_Y_PTR + 3) << 24;
 
   // getting a screen-space clipping region
-  uint8_t sugi_gfx_clip_x1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0);
-  uint8_t sugi_gfx_clip_y1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1);
-  uint8_t sugi_gfx_clip_x2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2);
-  uint8_t sugi_gfx_clip_y2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3);
+  // uint8_t sugi_gfx_clip_x1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0);
+  // uint8_t sugi_gfx_clip_y1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1);
+  // uint8_t sugi_gfx_clip_x2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2);
+  // uint8_t sugi_gfx_clip_y2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3);
+  uint16_t sugi_gfx_clip_x1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 0) | *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 0) << 8;
+  uint16_t sugi_gfx_clip_y1 = *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 1) | *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 1) << 8;
+  uint16_t sugi_gfx_clip_x2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 2) | *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 2) << 8;
+  uint16_t sugi_gfx_clip_y2 = *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 3) | *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 3) << 8;
+
+  // printf("p1: %d %d || p2: %d %d\r", sugi_gfx_clip_x1, sugi_gfx_clip_y1,
+  //                                   sugi_gfx_clip_x2, sugi_gfx_clip_y2);
 
   // converting a pixel world-space position to a screen-space position
   x -= sugi_gfx_camera_x;
@@ -307,7 +314,7 @@ void sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill)
 
 
 // Internal clip function that sets screen-space draw boundaries or clipping region
-void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
+void sugi_gfx_clip_internal(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
   if (x2 < x1)
   {
@@ -324,10 +331,20 @@ void sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
   }
 
   // Writes data to a virtual RAM
-  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0) = x1;
-  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1) = y1;
-  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2) = x2;
-  *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3) = y2;
+  // *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 0) = x1;
+  // *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 1) = y1;
+  // *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 2) = x2;
+  // *(sugi_memory_ptr + SUGI_MEM_CLIP_PTR + 3) = y2;
+  // Lower 8 bits
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 0) = x1 & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 1) = y1 & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 2) = x2 & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_LOW_PTR + 3) = y2 & 0xFF;
+  // Higher 8 bits
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 0) = (x1 >> 8) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 1) = (y1 >> 8) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 2) = (x2 >> 8) & 0xFF;
+  *(sugi_memory_ptr + SUGI_MEM_CLIP_HIGH_PTR + 3) = (y2 >> 8) & 0xFF;
 }
 
 
@@ -345,7 +362,7 @@ void sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2)
   y1 = (y1 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y1;
   x2 = (x2 < 0) ? 0 : (x2 > SUGI_RENDER_WIDTH)  ? SUGI_RENDER_WIDTH  : x2;
   y2 = (y2 < 0) ? 0 : (y1 > SUGI_RENDER_HEIGHT) ? SUGI_RENDER_HEIGHT : y2;
-  sugi_gfx_clip_internal((uint8_t)x1, (uint8_t)y1, (uint8_t)x2, (uint8_t)y2);
+  sugi_gfx_clip_internal((uint16_t)x1, (uint16_t)y1, (uint16_t)x2, (uint16_t)y2);
 }
 
 
@@ -523,7 +540,6 @@ void sugi_gfx_print(char *str, int32_t x, int32_t y, uint8_t c)
   int32_t slen = strlen(str);
   int32_t orig_ox = ox;
 
-  printf("-----\n\r");
   for (int i = 0; i < slen; i++)
   {
     int ascii = (int)str[i];

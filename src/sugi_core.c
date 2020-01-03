@@ -34,6 +34,18 @@ void sugi_core_run(void)
   // Initializing SDL
   sugi_delta_ticks = 0;
   SDL_Init(SDL_INIT_EVERYTHING);
+  // Setting up OpenGL Attributes
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  // Setting Vsync
+  SDL_GL_SetSwapInterval(SUGI_USE_VSYNC);
+  // Setting OpenGL Attributes
+  int32_t gl_major_version = 0;
+  int32_t gl_minor_version = 0;
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_version);
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &gl_minor_version);
   // Setting up SDL Window
   sugi_main_window = SDL_CreateWindow(
       "sugi",
@@ -47,18 +59,6 @@ void sugi_core_run(void)
   SDL_SetWindowSize(sugi_main_window, SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT);
   // Creating OpenGL context
   sugi_main_gl_context = SDL_GL_CreateContext(sugi_main_window);
-  // Setting up OpenGL Attributes
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  // Setting Vsync
-  SDL_GL_SetSwapInterval(SUGI_USE_VSYNC);
-  // Setting OpenGL Attributes
-  int32_t gl_major_version = 0;
-  int32_t gl_minor_version = 0;
-  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_version);
-  SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &gl_minor_version);
   // Print some information
   printf("VSync: %d\n", SUGI_USE_VSYNC);
   printf("GL Context version: %d.%d\n", gl_major_version, gl_minor_version);
@@ -104,24 +104,29 @@ void sugi_core_run(void)
   #pragma endregion INIT_RAM
 
 
+  //igCreateContext(NULL);
+  
+
   #pragma region GAME_LOOP
   // Runs an ingame init function
   sugi_call_init_internal();
   // Starting game loop
   while (!sugi_core_quit) {
+    // Clearing btnp buffer 
+    sugi_input_clear_btnp_internal();
     while (SDL_PollEvent(&sugi_sdl_event)) {
+      
+      const uint8_t * kb_state = SDL_GetKeyboardState(NULL);
+
       switch (sugi_sdl_event.type) {
       case SDL_QUIT:
         sugi_core_quit = 1;
         break;
       case SDL_KEYDOWN:
-        // . . . . . . . . . .(SDL_Keycode sdl_key)
-        // sugi_poll_controlls(event.key.keysym.sym);
-        //  | switch (sdl_key) {
-        //  |   case SDLK_UP: keys['up'] = 1; break;
-        //  |   .....
-        //  |   . . .
-        //  | }
+        sugi_input_process_kb_press_state(kb_state);
+        break;
+      case SDL_KEYUP:
+        sugi_input_process_kb_release_state(kb_state);
         break;
       default:
         break;
@@ -129,12 +134,21 @@ void sugi_core_run(void)
     }
     // TODO: Add game input polling here
     // Calls an ingame update and draw functoins
+    // TODO: Replace sugi_call_update and sugi_call_draw
+    //       to sugi_call_tick_fn_internal()
+    //       because it does the same thing...
     sugi_call_update_internal();
     sugi_call_draw_internal();
 
     // Rendering a screen
     sugi_renderer_draw_internal();
-
+    
+    // for (int i = 0; i < 8; i++)
+    //     printf("%d", (*(sugi_memory + SUGI_MEM_BTNP_PTR + 0) >> i) & 0x1);
+    // printf("\t");
+    // for (int i = 0; i < 8; i++)
+    //     printf("%d", (*(sugi_memory + SUGI_MEM_BTN_PTR + 0) >> i) & 0x1);
+    // printf("\n\r");
     // Capping a game to 60 FPS
     uint32_t delay = sugi_time_step_ms - (SDL_GetTicks() - sugi_delta_ticks);
     delay = (delay > sugi_time_step_ms) ? sugi_time_step_ms : delay;

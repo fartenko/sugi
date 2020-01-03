@@ -1,75 +1,41 @@
 #include "sugi.h"
-#include <stdio.h>
-
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-lua_State *L;
 
 
-#pragma region GAME
+
+
+void call_lua_tick();
+void call_lua_init();
+
 void test_draw();
-void test_init();
-void test_update();
 
-static int x, w, y, h, xs, ys;
-static int px, py, pw, ph;
-double t = 0;
+float t = 0;
+float fps = 0.0;
 
-
-void test_init(void)
+void call_lua_init(void)
 {
-  x  = 28;
-  w  = 16;
-  y  = 28;
-  h  = 8;
-  xs = 1;
-  ys = 1;
-  // player variables
-  px = 32;
-  py = 32;
-  pw = 8;
-  ph = 8;
+  //luaL_dofile(L, "lua/main.lua");
+  //lua_getglobal(L, "__init__");
+  //lua_call(L, 0, 0);
+  //lua_pop(L, 0);
 }
 
 
-void test_update(void)
+void call_lua_tick(void)
 {
-  x += xs;
-  y += ys;
-
-  if (x + w > 64)
-  {
-    x = 64 - w;
-    xs *= -1;
-  }
-  if (y + h > 64)
-  {
-    y = 64 - h;
-    ys *= -1;
-  }
-
-  if (x < 0)
-  {
-    x = 0;
-    xs *= -1;
-  }
-  if (y < 0)
-  {
-    y = 0;
-    ys *= -1;
-  }
-
-  t += 1.0 / 60.0;
+  //lua_getglobal(L, "__tick__");
+  //lua_call(L, 0, 0);
+  //lua_pop(L, 0);
 }
 
 
+// Test draw function
 void test_draw()
 {
+  uint32_t t1 = SDL_GetTicks();
   sugi_gfx_pal_reset();
   sugi_gfx_palt_reset();
   sugi_gfx_clear(0);
+
 
   for (int i = 0; i < 8; i++)
     sugi_gfx_rect(8 * i, 0, 8 * (i + 1), 7, 1, i);
@@ -81,9 +47,9 @@ void test_draw()
     sugi_gfx_pset(i, 127, 7);
   }
 
-  sugi_gfx_clip(16, 16, 64, 64);
-  sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 7);
-  sugi_gfx_clip_reset();
+  //sugi_gfx_clip(16, 16, 64, 64);
+  //sugi_gfx_rect(x + 1, y + 1, x + w + 1, y + h + 1, 1, 7);
+  //sugi_gfx_clip_reset();
 
   sugi_gfx_line(64, 64, 128,  92, 7);
   sugi_gfx_rect(32, 16,  92,  48, 0, 1);
@@ -149,31 +115,73 @@ void test_draw()
                 16, 24, 16 + cos(t * 4) * 8, 16 + sin(t * 4) * 8);
 
   luaL_dostring(L, "lua_print('Hello from Lua!')");
+  luaL_dofile(L, "lua/print.lua");
 
-  // sugi_gfx_print("test\n\r\thello", 0, 0, 7);
+  sugi_gfx_print("test\n\r\thello", 0, 0, 7);
+  uint32_t t2 = SDL_GetTicks();
+
+
+  for (int i = 0; i < 8; i++)
+  {
+    if (sugi_input_btnp(i, 0))
+      sugi_gfx_circ(16 + i * 8, 64, 4, 1, 7);
+    else 
+      sugi_gfx_circ(16 + i * 8, 64, 4, 0, 7);
+
+    if (sugi_input_btn(i, 0))
+      sugi_gfx_circ(16 + i * 8, 72, 4, 1, 7);
+    else 
+      sugi_gfx_circ(16 + i * 8, 72, 4, 0, 7);
+  }
+
+  t+=1.0/60.0;
 }
-#pragma endregion GAME
+
 
 
 static int lua_print(lua_State *L)
 {
-  int n = lua_gettop(L);
-  
-  // for (int i = 1; i <= n; i++)
-  // {
-    
-  // }
-  
-  // char **str;
+  // define default values
+  char * s = "";
+  int32_t x = 0;
+  int32_t y = 0;
+  uint8_t c = sugi_gfx_getcolor(); 
 
-  if (!lua_isstring(L, 1)){
-    lua_pushstring(L, "First argument must be a string!");
-    lua_error(L);
+  // process arguments
+  if (lua_isstring(L, 1)) {
+    s = lua_tostring(L, 1);
+  }
+  else
+  {
+    if (lua_isnil(L, 1))
+      s = "nil";
+    if (lua_isboolean(L, 1))
+      s = lua_toboolean(L, 1) ? "true" : "false";
+    if (lua_istable(L, 1))
+      s = "table";
   }
 
-  // lua_pushinteger()
-  sugi_gfx_print(lua_tostring(L, 1), 0, 0, 7);
+  if (lua_isnumber(L, 2))
+    x = lua_tointeger(L, 2);
+  if (lua_isnumber(L, 3))
+    y = lua_tointeger(L, 3);
+  if (lua_isnumber(L, 4))
+    c = lua_tointeger(L, 4);
+  
+  // call sugi print function
+  sugi_gfx_print(s, x, y, c);
+  return 1;
+}
 
+
+static int lua_cls(lua_State *L)
+{
+  // process arguments
+  if (!lua_isnumber(L, 1))
+    sugi_gfx_clear_no_col();
+
+  // call sugi clear function
+  sugi_gfx_clear(lua_tointeger(L, 1));
   return 1;
 }
 
@@ -189,11 +197,12 @@ int main(int argc, char *argv[])
   luaopen_string(L);
   luaopen_math(L);
 
-  lua_register(L, "lua_print", lua_print);
+  lua_register(L, "print", lua_print);
+  lua_register(L, "cls", lua_cls);
 
-  sugi_core_set_init(test_init);
+  sugi_core_set_init(call_lua_init);
+  sugi_core_set_update(call_lua_tick);
   sugi_core_set_draw(test_draw);
-  sugi_core_set_update(test_update);
   sugi_core_run();
 
   lua_close(L);

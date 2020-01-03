@@ -5,16 +5,30 @@
 #include "GL/glew.h"
 #include "GL/gl.h"
 #include "GL/glu.h"
-
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 #pragma region CONFIG
+// TODO: move all of this to a config file, to prevent 
+// from recompiling after a change
 enum sugi_config {
-  SUGI_SCREEN_WIDTH  = 320 + 16,
-  SUGI_SCREEN_HEIGHT = 256 + 16,
-  SUGI_RENDER_WIDTH  = 160,
-  SUGI_RENDER_HEIGHT = 128,
+  SUGI_SCREEN_WIDTH  = 640 + 16, // 320 + 16,
+  SUGI_SCREEN_HEIGHT = 512 + 16, // 256 + 16,
+  SUGI_RENDER_WIDTH  = 160,      // 160,
+  SUGI_RENDER_HEIGHT = 128,      // 128,
   SUGI_USE_VSYNC     = 1,
   SUGI_RESIZABLE     = 0,
+};
+enum sugi_kb {
+  SUGI_KB_BTN_UP    = SDL_SCANCODE_UP,
+  SUGI_KB_BTN_DOWN  = SDL_SCANCODE_DOWN,
+  SUGI_KB_BTN_LEFT  = SDL_SCANCODE_LEFT,
+  SUGI_KB_BTN_RIGHT = SDL_SCANCODE_RIGHT,
+  SUGI_KB_BTN_X     = SDL_SCANCODE_X,
+  SUGI_KB_BTN_Y     = SDL_SCANCODE_Z,
+  SUGI_KB_BTN_A     = SDL_SCANCODE_C,
+  SUGI_KB_BTN_B     = SDL_SCANCODE_V,
 };
 #pragma endregion CONFIG
 
@@ -28,6 +42,8 @@ GLuint         sugi_gl_program;
 /* Sugi render buffer */
 uint8_t  sugi_draw_buffer[SUGI_RENDER_WIDTH * SUGI_RENDER_HEIGHT];
 uint8_t *sugi_draw_buffer_ptr;
+/* Sugi keyboard codes */
+uint8_t sugi_kb_codes[8];
 /* Functions pointers */
 void (*sugi_init_func)(void);
 void (*sugi_update_func)(void);
@@ -35,6 +51,8 @@ void (*sugi_draw_func)(void);
 /* Shaders */
 const char *vert_shader_src[];
 const char *frag_shader_src[];
+/* Lua interpreter state pointer */
+lua_State *L;
 #pragma endregion CORE_VARIABLES
 
 
@@ -52,24 +70,25 @@ const char *frag_shader_src[];
 
 enum sugi_memory_table {
   // VRAM
-  SUGI_MEM_SCREEN_PTR     = 0x0000,
+  SUGI_MEM_SCREEN_PTR      = 0x0000,
   // DRAW STATE
-  SUGI_MEM_COLOR_PTR      = 0x2800,
-  SUGI_MEM_DISP_MODE_PTR  = 0x2801,
-  SUGI_MEM_CAMERA_X_PTR   = 0x2802,
-  SUGI_MEM_CAMERA_Y_PTR   = 0x2806,
-  SUGI_MEM_CLIP_PTR       = 0x280A, // 0x280B, 0x280C, 0x280D
-  SUGI_MEM_PAL_DRAW_PTR   = 0x280E, // 0x280F .. 0x281D
-  SUGI_MEM_PAL_SCREEN_PTR = 0x281E, // 0x281F .. 0x282D
-  SUGI_MEM_PALT_PTR       = 0x282E, // 0x282F
-  SUGI_MEM_PALT_SET_PTR   = 0x2830,
-  SUGI_MEM_FILLP_PTR      = 0x2831,
-  SUGI_MEM_CURSOR_PTR     = 0x2833,
-                       // = 0x2835,
-  SUGI_MEM_SPRSHEET_PTR   = 0x3000, // size = 0x2000
-                       // = 0x5000,
-  SUGI_MEM_MAPSHEET_PTR   = 0x5000, // size = 0x5000
-                       // = 0xA000,
+  SUGI_MEM_COLOR_PTR       = 0x2800, // size: 1 byte
+  SUGI_MEM_DISP_MODE_PTR   = 0x2801, // size: 1 byte
+  SUGI_MEM_CAMERA_X_PTR    = 0x2802, // size: 4 bytes
+  SUGI_MEM_CAMERA_Y_PTR    = 0x2806, // size: 4 bytes
+  SUGI_MEM_CLIP_LOW_PTR    = 0x280A, // size: 4 bytes
+  SUGI_MEM_CLIP_HIGH_PTR   = 0x280E, // size: 4 bytes
+  SUGI_MEM_PAL_DRAW_PTR    = 0x2812, // size: 16 bytes
+  SUGI_MEM_PAL_SCREEN_PTR  = 0x2822, // size: 16 bytes
+  SUGI_MEM_PALT_PTR        = 0x2832, // size: 2 bytes
+  SUGI_MEM_PALT_SET_PTR    = 0x2834, // size: 1 byte
+  SUGI_MEM_FILLP_PTR       = 0x2835, // size: 1 byte
+  SUGI_MEM_CURSOR_LOW_PTR  = 0x2836, // size: 2 bytes
+  SUGI_MEM_CURSOR_HITH_PTR = 0x2838, // size: 2 bytes
+  SUGI_MEM_BTNP_PTR        = 0x283A, // size: 4 bytes (for each player)
+  SUGI_MEM_BTN_PTR         = 0x283E, // size: 4 bytes (for each player)
+  SUGI_MEM_SPRSHEET_PTR    = 0x3000, // size: 0x2000
+  SUGI_MEM_MAPSHEET_PTR    = 0x5000, // size: 0x5000
 };
 
 // Regarding map:
@@ -140,7 +159,7 @@ void    sugi_gfx_circ(int32_t xc, int32_t yc, int32_t r, int8_t fill, uint8_t c_
 void    sugi_gfx_circ_no_col(int32_t xc, int32_t yc, int32_t r, int8_t fill);
 void    sugi_gfx_circ_segment_internal(int32_t x0, int32_t y0, int32_t x, int32_t y, int8_t fill, uint8_t c_in);
 // clip drawing region
-void    sugi_gfx_clip_internal(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+void    sugi_gfx_clip_internal(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 void    sugi_gfx_clip_reset(void);
 void    sugi_gfx_clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 // palette manipulation
@@ -167,6 +186,20 @@ void    sugi_map_draw(uint8_t ox, uint8_t oy);
 #pragma endregion GFX_FUNCTIONS
 
 
+#pragma region INPUT_FUNCTIONS
+// Currently
+void    sugi_input_process_kb_press_state(const uint8_t * state);
+void    sugi_input_process_kb_release_state(const uint8_t * state);
+uint8_t sugi_input_btn(uint8_t b, uint8_t p);
+uint8_t sugi_input_btnp(uint8_t b, uint8_t p);
+void    sugi_input_clear_btnp_internal(void);
+#pragma endregion INPUT_FUNCTIONS
+
+
+#pragma region LUA_INTERPRETER_FUNCTIONS
+#pragma endregion LUA_INTERPRETER_FUNCTIONS
+
+
 /* INPUT **********************************************************/
 // * button input
 // * text input
@@ -183,7 +216,7 @@ void    sugi_map_draw(uint8_t ox, uint8_t oy);
 
 
 /* GRAPHICS *******************************************************/
-// * text model (or ascii mode)
+// * text mode (or ascii mode)
 //
 
 

@@ -114,6 +114,7 @@ void sugi_renderer_draw_internal(void)
   // TODO: Move it to the resized callback
   // Resizing and moving a viewport every time we resize or draw the screen
   sugi_renderer_gl_set_viewport_internal(rw * zoom, rh * zoom, (sw - rw * zoom) / 2, (sh - rh * zoom) / 2);
+  // TODO: If using imgui, put igRender before SwapWindow
   SDL_GL_SwapWindow(sugi_main_window);
 }
 #pragma endregion RENDERER_FUNCTIONS
