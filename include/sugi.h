@@ -12,23 +12,34 @@
 #pragma region CONFIG
 // TODO: move all of this to a config file, to prevent 
 // from recompiling after a change
-enum sugi_config {
+enum SUGI_CONFIG {
   SUGI_SCREEN_WIDTH  = 640 + 16, // 320 + 16,
   SUGI_SCREEN_HEIGHT = 512 + 16, // 256 + 16,
   SUGI_RENDER_WIDTH  = 160,      // 160,
   SUGI_RENDER_HEIGHT = 128,      // 128,
   SUGI_USE_VSYNC     = 1,
   SUGI_RESIZABLE     = 0,
+  SUGI_MAX_JOYSTICKS = 4,
 };
-enum sugi_kb {
+enum SUGI_SDL_KB_MAP {
   SUGI_KB_BTN_UP    = SDL_SCANCODE_UP,
   SUGI_KB_BTN_DOWN  = SDL_SCANCODE_DOWN,
   SUGI_KB_BTN_LEFT  = SDL_SCANCODE_LEFT,
   SUGI_KB_BTN_RIGHT = SDL_SCANCODE_RIGHT,
-  SUGI_KB_BTN_X     = SDL_SCANCODE_X,
-  SUGI_KB_BTN_Y     = SDL_SCANCODE_Z,
-  SUGI_KB_BTN_A     = SDL_SCANCODE_C,
-  SUGI_KB_BTN_B     = SDL_SCANCODE_V,
+  SUGI_KB_BTN_A     = SDL_SCANCODE_Z,
+  SUGI_KB_BTN_B     = SDL_SCANCODE_X,
+  SUGI_KB_BTN_X     = SDL_SCANCODE_A,
+  SUGI_KB_BTN_Y     = SDL_SCANCODE_S,
+};
+enum SUGI_SDL_CONTROLLER_MAP {
+  SUGI_CONTROLLER_UP    = SDL_CONTROLLER_BUTTON_DPAD_UP,
+  SUGI_CONTROLLER_DOWN  = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+  SUGI_CONTROLLER_LEFT  = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+  SUGI_CONTROLLER_RIGHT = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+  SUGI_CONTROLLER_A     = SDL_CONTROLLER_BUTTON_A,
+  SUGI_CONTROLLER_B     = SDL_CONTROLLER_BUTTON_B,
+  SUGI_CONTROLLER_X     = SDL_CONTROLLER_BUTTON_X,
+  SUGI_CONTROLLER_Y     = SDL_CONTROLLER_BUTTON_Y,
 };
 #pragma endregion CONFIG
 
@@ -43,7 +54,13 @@ GLuint         sugi_gl_program;
 uint8_t  sugi_draw_buffer[SUGI_RENDER_WIDTH * SUGI_RENDER_HEIGHT];
 uint8_t *sugi_draw_buffer_ptr;
 /* Sugi keyboard codes */
-uint8_t sugi_kb_codes[8];
+uint8_t sugi_kb_map[8];
+uint8_t sugi_controller_map[8];
+/* Joysticks */
+SDL_Joystick       *sugi_joysticks[SUGI_MAX_JOYSTICKS];
+SDL_GameController *sugi_gamecontrollers[SUGI_MAX_JOYSTICKS];
+SDL_JoystickID      sugi_joysticks_id[SUGI_MAX_JOYSTICKS];
+uint8_t             sugi_joysticks_opened[SUGI_MAX_JOYSTICKS];
 /* Functions pointers */
 void (*sugi_init_func)(void);
 void (*sugi_update_func)(void);
@@ -68,7 +85,7 @@ lua_State *L;
 // 0x5000 - 0x9FFF map 160x128
 // 0xA000 - ......
 
-enum sugi_memory_table {
+enum SUGI_MEMORY_TABLE {
   // VRAM
   SUGI_MEM_SCREEN_PTR      = 0x0000,
   // DRAW STATE
@@ -193,6 +210,8 @@ void    sugi_input_process_kb_release_state(const uint8_t * state);
 uint8_t sugi_input_btn(uint8_t b, uint8_t p);
 uint8_t sugi_input_btnp(uint8_t b, uint8_t p);
 void    sugi_input_clear_btnp_internal(void);
+void sugi_input_process_controller_press_button(uint8_t button, uint8_t player);
+void sugi_input_process_controller_release_button(uint8_t button, uint8_t player);
 #pragma endregion INPUT_FUNCTIONS
 
 

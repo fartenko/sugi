@@ -131,6 +131,18 @@ void test_draw()
     else 
       sugi_gfx_circ(16 + i * 8, 72, 4, 0, 7);
   }
+  for (int i = 0; i < 8; i++)
+  {
+    if (sugi_input_btnp(i, 1))
+      sugi_gfx_circ(64 + 16 + i * 8, 64, 4, 1, 6);
+    else 
+      sugi_gfx_circ(64 + 16 + i * 8, 64, 4, 0, 6);
+
+    if (sugi_input_btn(i, 1))
+      sugi_gfx_circ(64 + 16 + i * 8, 72, 4, 1, 6);
+    else 
+      sugi_gfx_circ(64 + 16 + i * 8, 72, 4, 0, 6);
+  }
 
   t+=1.0/60.0;
 }

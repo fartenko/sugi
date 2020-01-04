@@ -115,21 +115,179 @@ void sugi_core_run(void)
     // Clearing btnp buffer 
     sugi_input_clear_btnp_internal();
     while (SDL_PollEvent(&sugi_sdl_event)) {
-      
+      // Getting a keyboard state
       const uint8_t * kb_state = SDL_GetKeyboardState(NULL);
-
+      
       switch (sugi_sdl_event.type) {
-      case SDL_QUIT:
-        sugi_core_quit = 1;
-        break;
-      case SDL_KEYDOWN:
-        sugi_input_process_kb_press_state(kb_state);
-        break;
-      case SDL_KEYUP:
-        sugi_input_process_kb_release_state(kb_state);
-        break;
-      default:
-        break;
+        // Quit program event
+        case SDL_QUIT:
+          sugi_core_quit = 1;
+          printf("Quit!\n\r");
+          break;
+
+        // Keyboard key donw and up events (currently used to control player 0)
+        case SDL_KEYDOWN:
+          sugi_input_process_kb_press_state(kb_state);
+          break;
+        case SDL_KEYUP:
+          sugi_input_process_kb_release_state(kb_state);
+          break;
+
+        // Joystick events
+        case SDL_JOYDEVICEADDED:
+        {
+          // TODO: move all of this in a separate function
+          // like sugi_input_add_joystick(event);
+          int j_which = sugi_sdl_event.jdevice.which;
+          int j_n = SDL_NumJoysticks(); 
+          printf("SDL_JOYDEVICEADDED which:%d\n\r", j_which);
+
+          if (j_n > 0 && j_n <= SUGI_MAX_JOYSTICKS)
+          {
+            for (int i = 0; i < SUGI_MAX_JOYSTICKS; i++)
+            {
+              if (!sugi_joysticks_opened[i])
+              {
+                // Open a joystick 
+                sugi_joysticks_opened[i] = 1;
+                sugi_joysticks[i] = SDL_JoystickOpen(j_which);
+                sugi_gamecontrollers[i] = SDL_GameControllerOpen(j_which);
+                sugi_joysticks_id[i] = SDL_JoystickInstanceID(sugi_joysticks[i]);
+                printf("Joystick opened!\n\r");
+                printf("j_opened[i]:\t%d\n\r", i);
+                printf("j_id:\t\t%d\n\r", sugi_joysticks_id[i]);
+
+                break; // break out of a for loop!
+              }
+              else
+              {
+                printf("Joystick index %d is occupied!\n\r", i);
+              }
+            }
+          }
+          else 
+          {
+            printf("Max number of joysticks is %d\n\n", SUGI_MAX_JOYSTICKS);
+          }
+          break;
+        }
+        case SDL_JOYDEVICEREMOVED:
+        {
+          // TODO: move all of this in a separate function
+          // like sugi_input_remove_joystick(event);
+          int j_id = sugi_sdl_event.jdevice.which;
+          printf("SDL_JOYDEVICEREMOVED which:%d\n\r", j_id);
+
+          int i = 0;
+          int found = 0;
+          for (i = 0; i < SUGI_MAX_JOYSTICKS; i++)
+          {
+            if (j_id == sugi_joysticks_id[i])
+            {
+              found = 1;
+              break; // break out of a for loop
+            }
+          }
+
+          if (found)
+          {
+            sugi_joysticks_opened[i] = 0;
+            sugi_joysticks_id[i] = 0;
+            SDL_JoystickClose(sugi_joysticks[i]);
+            SDL_GameControllerClose(sugi_gamecontrollers[i]);
+            printf("Joystick closed!\n\r");
+            printf("j_opened[i]:\t%d\n\r", i);
+            printf("j_id:\t\t%d\n\r", j_id);
+          }
+          else
+          {
+            printf("Could not find joystick with id %d\n\r", j_id);
+          }
+          break;
+        }
+
+        // case SDL_JOYBUTTONDOWN:
+        // {
+        //   printf("Joystick button down! (j_id: %d, btn: %d, str: %s)\n\r",
+        //           sugi_sdl_event.jdevice.which,
+        //           sugi_sdl_event.jbutton.button,
+        //           SDL_GameControllerGetStringForButton(sugi_sdl_event.jbutton.button));
+        //   break;
+        // }
+        case SDL_CONTROLLERDEVICEADDED:
+          printf("SDL_CONTROLLERDEVICEADDED which:%d\n", sugi_sdl_event.cdevice.which);
+          break;
+        case SDL_CONTROLLERDEVICEREMOVED:
+          printf("SDL_CONTROLLERDEVICEREMOVED which:%d\n",  sugi_sdl_event.cdevice.which);
+          break;
+        case SDL_CONTROLLERBUTTONDOWN:
+        {
+          // TODO: move all of this in a separate function
+          // like sugi_input_controller_button_down(event);
+          int j_id = sugi_sdl_event.cdevice.which;
+          int button = sugi_sdl_event.cbutton.button;
+          int i = 0;
+          int found = 0;
+          for (i = 0; i < SUGI_MAX_JOYSTICKS; i++)
+          {
+            if (j_id == sugi_joysticks_id[i])
+            {
+              found = 1;
+              break;
+            }
+          } 
+
+          if (found)
+          {
+            printf("Controller button down! (j_id: %d, btn: %d, plr: %d, str: %s)\n\r",
+                    j_id,
+                    button,
+                    i,
+                    SDL_GameControllerGetStringForButton(button));
+            sugi_input_process_controller_press_button(button, i);
+          }
+          break;
+        }
+        case SDL_CONTROLLERBUTTONUP:
+        {
+          // TODO: move all of this in a separate function
+          // like sugi_input_controller_button_up(event);
+          int j_id = sugi_sdl_event.cdevice.which;
+          int button = sugi_sdl_event.cbutton.button;
+          int i = 0;
+          int found = 0;
+          for (i = 0; i < SUGI_MAX_JOYSTICKS; i++)
+          {
+            if (j_id == sugi_joysticks_id[i])
+            {
+              found = 1;
+              break;
+            }
+          } 
+
+          if (found)
+          {
+            printf("Controller button up! (j_id: %d, btn: %d, plr: %d, str: %s)\n\r",
+                    j_id,
+                    button,
+                    i,
+                    SDL_GameControllerGetStringForButton(button));
+            sugi_input_process_controller_release_button(button, i);
+          }
+          break;
+
+        }
+        // case SDL_CONTROLLERAXISMOTION:
+        // {
+        //   int axis = sugi_sdl_event.caxis.axis;
+        //   int value = sugi_sdl_event.caxis.value;
+
+        //   printf("Axis: %d \t %d\n\r", axis, value);
+        // }
+
+
+        default:
+          break;
       }
     }
     // TODO: Add game input polling here
