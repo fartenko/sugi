@@ -2,6 +2,7 @@
 #define SUGI_H
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
 #include "GL/glew.h"
 #include "GL/gl.h"
 #include "GL/glu.h"
@@ -9,37 +10,38 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
+
 #pragma region CONFIG
 // TODO: move all of this to a config file, to prevent 
 // from recompiling after a change
 enum SUGI_CONFIG {
-  SUGI_SCREEN_WIDTH  = 640 + 16, // 320 + 16,
-  SUGI_SCREEN_HEIGHT = 512 + 16, // 256 + 16,
-  SUGI_RENDER_WIDTH  = 160,      // 160,
-  SUGI_RENDER_HEIGHT = 128,      // 128,
-  SUGI_USE_VSYNC     = 1,
-  SUGI_RESIZABLE     = 0,
-  SUGI_MAX_JOYSTICKS = 4,
+    SUGI_SCREEN_WIDTH  = 640 + 16, // 320 + 16,
+    SUGI_SCREEN_HEIGHT = 512 + 16, // 256 + 16,
+    SUGI_RENDER_WIDTH  = 160,      // 160, 
+    SUGI_RENDER_HEIGHT = 128,      // 128,
+    SUGI_USE_VSYNC     = 1,
+    SUGI_RESIZABLE     = 0,
+    SUGI_MAX_JOYSTICKS = 4,
 };
 enum SUGI_SDL_KB_MAP {
-  SUGI_KB_BTN_UP    = SDL_SCANCODE_UP,
-  SUGI_KB_BTN_DOWN  = SDL_SCANCODE_DOWN,
-  SUGI_KB_BTN_LEFT  = SDL_SCANCODE_LEFT,
-  SUGI_KB_BTN_RIGHT = SDL_SCANCODE_RIGHT,
-  SUGI_KB_BTN_A     = SDL_SCANCODE_Z,
-  SUGI_KB_BTN_B     = SDL_SCANCODE_X,
-  SUGI_KB_BTN_X     = SDL_SCANCODE_A,
-  SUGI_KB_BTN_Y     = SDL_SCANCODE_S,
+    SUGI_KB_BTN_UP    = SDL_SCANCODE_UP,
+    SUGI_KB_BTN_DOWN  = SDL_SCANCODE_DOWN,
+    SUGI_KB_BTN_LEFT  = SDL_SCANCODE_LEFT,
+    SUGI_KB_BTN_RIGHT = SDL_SCANCODE_RIGHT,
+    SUGI_KB_BTN_A     = SDL_SCANCODE_Z,
+    SUGI_KB_BTN_B     = SDL_SCANCODE_X,
+    SUGI_KB_BTN_X     = SDL_SCANCODE_A,
+    SUGI_KB_BTN_Y     = SDL_SCANCODE_S,
 };
 enum SUGI_SDL_CONTROLLER_MAP {
-  SUGI_CONTROLLER_UP    = SDL_CONTROLLER_BUTTON_DPAD_UP,
-  SUGI_CONTROLLER_DOWN  = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-  SUGI_CONTROLLER_LEFT  = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-  SUGI_CONTROLLER_RIGHT = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-  SUGI_CONTROLLER_A     = SDL_CONTROLLER_BUTTON_A,
-  SUGI_CONTROLLER_B     = SDL_CONTROLLER_BUTTON_B,
-  SUGI_CONTROLLER_X     = SDL_CONTROLLER_BUTTON_X,
-  SUGI_CONTROLLER_Y     = SDL_CONTROLLER_BUTTON_Y,
+    SUGI_CONTROLLER_UP    = SDL_CONTROLLER_BUTTON_DPAD_UP,
+    SUGI_CONTROLLER_DOWN  = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+    SUGI_CONTROLLER_LEFT  = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+    SUGI_CONTROLLER_RIGHT = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+    SUGI_CONTROLLER_A     = SDL_CONTROLLER_BUTTON_A,
+    SUGI_CONTROLLER_B     = SDL_CONTROLLER_BUTTON_B,
+    SUGI_CONTROLLER_X     = SDL_CONTROLLER_BUTTON_X,
+    SUGI_CONTROLLER_Y     = SDL_CONTROLLER_BUTTON_Y,
 };
 #pragma endregion CONFIG
 
@@ -56,6 +58,8 @@ uint8_t *sugi_draw_buffer_ptr;
 /* Sugi keyboard codes */
 uint8_t sugi_kb_map[8];
 uint8_t sugi_controller_map[8];
+/* Sugi font */
+TTF_Font *sugi_font;
 /* Joysticks */
 SDL_Joystick       *sugi_joysticks[SUGI_MAX_JOYSTICKS];
 SDL_GameController *sugi_gamecontrollers[SUGI_MAX_JOYSTICKS];
@@ -73,6 +77,22 @@ lua_State *L;
 #pragma endregion CORE_VARIABLES
 
 
+#pragma region TEXTINPUT
+uint8_t *sugi_text_target;
+uint8_t sugi_text_input_mode;
+#pragma endregion TEXTINPUT
+
+
+#pragma region WINDOWDATA
+uint8_t  sugi_window_zoom;
+uint16_t sugi_window_offset_x;
+uint16_t sugi_window_offset_y;
+// TODO: Move this to memory
+uint16_t sugi_mouse_x;
+uint16_t sugi_mouse_y;
+#pragma endregion WINDOWDATA
+
+
 #pragma region RAM
 /* Sugi RAM */
 // 0x0000 - 0x27FF screen data (4bit color)
@@ -84,28 +104,28 @@ lua_State *L;
 // 0x3000 - 0x4FFF spritesheet 0-255
 // 0x5000 - 0x9FFF map 160x128
 // 0xA000 - ......
-
+#define MEMOFFSET 0x100000
 enum SUGI_MEMORY_TABLE {
-  // VRAM
-  SUGI_MEM_SCREEN_PTR      = 0x0000,
-  // DRAW STATE
-  SUGI_MEM_COLOR_PTR       = 0x2800, // size: 1 byte
-  SUGI_MEM_DISP_MODE_PTR   = 0x2801, // size: 1 byte
-  SUGI_MEM_CAMERA_X_PTR    = 0x2802, // size: 4 bytes
-  SUGI_MEM_CAMERA_Y_PTR    = 0x2806, // size: 4 bytes
-  SUGI_MEM_CLIP_LOW_PTR    = 0x280A, // size: 4 bytes
-  SUGI_MEM_CLIP_HIGH_PTR   = 0x280E, // size: 4 bytes
-  SUGI_MEM_PAL_DRAW_PTR    = 0x2812, // size: 16 bytes
-  SUGI_MEM_PAL_SCREEN_PTR  = 0x2822, // size: 16 bytes
-  SUGI_MEM_PALT_PTR        = 0x2832, // size: 2 bytes
-  SUGI_MEM_PALT_SET_PTR    = 0x2834, // size: 1 byte
-  SUGI_MEM_FILLP_PTR       = 0x2835, // size: 1 byte
-  SUGI_MEM_CURSOR_LOW_PTR  = 0x2836, // size: 2 bytes
-  SUGI_MEM_CURSOR_HITH_PTR = 0x2838, // size: 2 bytes
-  SUGI_MEM_BTNP_PTR        = 0x283A, // size: 4 bytes (for each player)
-  SUGI_MEM_BTN_PTR         = 0x283E, // size: 4 bytes (for each player)
-  SUGI_MEM_SPRSHEET_PTR    = 0x3000, // size: 0x2000
-  SUGI_MEM_MAPSHEET_PTR    = 0x5000, // size: 0x5000
+    // VRAM
+    SUGI_MEM_SCREEN_PTR      = 0x0000 + MEMOFFSET,
+    // DRAW STATE
+    SUGI_MEM_COLOR_PTR       = 0x2800 + MEMOFFSET, // size: 1 byte
+    SUGI_MEM_DISP_MODE_PTR   = 0x2801 + MEMOFFSET, // size: 1 byte
+    SUGI_MEM_CAMERA_X_PTR    = 0x2802 + MEMOFFSET, // size: 4 bytes
+    SUGI_MEM_CAMERA_Y_PTR    = 0x2806 + MEMOFFSET, // size: 4 bytes
+    SUGI_MEM_CLIP_LOW_PTR    = 0x280A + MEMOFFSET, // size: 4 bytes
+    SUGI_MEM_CLIP_HIGH_PTR   = 0x280E + MEMOFFSET, // size: 4 bytes
+    SUGI_MEM_PAL_DRAW_PTR    = 0x2812 + MEMOFFSET, // size: 16 bytes
+    SUGI_MEM_PAL_SCREEN_PTR  = 0x2822 + MEMOFFSET, // size: 16 bytes
+    SUGI_MEM_PALT_PTR        = 0x2832 + MEMOFFSET, // size: 2 bytes
+    SUGI_MEM_PALT_SET_PTR    = 0x2834 + MEMOFFSET, // size: 1 byte
+    SUGI_MEM_FILLP_PTR       = 0x2835 + MEMOFFSET, // size: 1 byte
+    SUGI_MEM_CURSOR_LOW_PTR  = 0x2836 + MEMOFFSET, // size: 2 bytes
+    SUGI_MEM_CURSOR_HITH_PTR = 0x2838 + MEMOFFSET, // size: 2 bytes
+    SUGI_MEM_BTNP_PTR        = 0x283A + MEMOFFSET, // size: 4 bytes (for each player)
+    SUGI_MEM_BTN_PTR         = 0x283E + MEMOFFSET, // size: 4 bytes (for each player)
+    SUGI_MEM_SPRSHEET_PTR    = 0x3000 + MEMOFFSET, // size: 0x2000
+    SUGI_MEM_MAPSHEET_PTR    = 0x5000 + MEMOFFSET, // size: 0x5000
 };
 
 // Regarding map:
@@ -114,11 +134,11 @@ enum SUGI_MEMORY_TABLE {
 
 // uint8_t sugi_display_mode;
 static const uint32_t sugi_memory_screen_size =
-                      (SUGI_RENDER_WIDTH / 2) * SUGI_RENDER_HEIGHT;
+                                            (SUGI_RENDER_WIDTH / 2) * SUGI_RENDER_HEIGHT;
 
 //                   0x10000   // 0x0000 -> 0xFFFF   64kB
 //                   0x18000   // 0x0000 -> 0x17FFF  96kB
-uint8_t  sugi_memory[0x20000]; // 0x0000 -> 0x1FFFF 128kB
+uint8_t  sugi_memory[0x1000000]; //0x20000]; // 0x0000 -> 0x1FFFF 128kB
 uint8_t *sugi_memory_ptr;
 uint8_t *sugi_memory_screen_ptr;
 #pragma endregion RAM
@@ -210,8 +230,8 @@ void    sugi_input_process_kb_release_state(const uint8_t * state);
 uint8_t sugi_input_btn(uint8_t b, uint8_t p);
 uint8_t sugi_input_btnp(uint8_t b, uint8_t p);
 void    sugi_input_clear_btnp_internal(void);
-void sugi_input_process_controller_press_button(uint8_t button, uint8_t player);
-void sugi_input_process_controller_release_button(uint8_t button, uint8_t player);
+void    sugi_input_process_controller_press_button(uint8_t button, uint8_t player);
+void    sugi_input_process_controller_release_button(uint8_t button, uint8_t player);
 #pragma endregion INPUT_FUNCTIONS
 
 

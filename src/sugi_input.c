@@ -1,6 +1,7 @@
 #include "sugi.h"
 #include <stdio.h>
 
+uint8_t sugi_text_input_mode = 0;
 
 uint8_t sugi_kb_map[8] = {
     SUGI_KB_BTN_UP,
