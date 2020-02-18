@@ -17,8 +17,8 @@
 enum SUGI_CONFIG {
     SUGI_SCREEN_WIDTH  = 640 + 16, // 320 + 16,
     SUGI_SCREEN_HEIGHT = 512 + 16, // 256 + 16,
-    SUGI_RENDER_WIDTH  = 160,      // 160, 
-    SUGI_RENDER_HEIGHT = 128,      // 128,
+    SUGI_RENDER_WIDTH  = 320,      // 160, 
+    SUGI_RENDER_HEIGHT = 256,      // 128,
     SUGI_USE_VSYNC     = 1,
     SUGI_RESIZABLE     = 0,
     SUGI_MAX_JOYSTICKS = 4,

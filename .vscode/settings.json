@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "sugi.h": "c",
-        "lualib.h": "c"
-    }
-}

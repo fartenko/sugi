@@ -143,11 +143,11 @@ void test_draw()
 
     sugi_text_input_mode = 1;
     sugi_text_target = &test_text;
-    sugi_gfx_clear(0);
-    sugi_gfx_print(test_text, 0, 0, 7);
+    //sugi_gfx_clear(0);
+    //sugi_gfx_print(test_text, 0, 0, 7);
 
     sugi_gfx_pset(sugi_mouse_x, sugi_mouse_y, 7);
-    sugi_gfx_line(sugi_mouse_x, sugi_mouse_y, mx_last, my_last, 7);
+    //sugi_gfx_line(sugi_mouse_x, sugi_mouse_y, mx_last, my_last, 7);
     
     int _x = cos(t) * 16;
     int _y = sin(t) * 16;
