@@ -51,7 +51,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /home/vbrydik/dev/git/sugi
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/vbrydik/dev/git/sugi
+CMAKE_BINARY_DIR = /home/vbrydik/dev/git/sugi/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,8 +69,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/vbrydik/dev/git/sugi/CMakeFiles /home/vbrydik/dev/git/sugi/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vbrydik/dev/git/sugi/build/CMakeFiles /home/vbrydik/dev/git/sugi/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/vbrydik/dev/git/sugi/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/vbrydik/dev/git/sugi/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -285,6 +285,33 @@ src/sugi_map.c.s:
 	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_map.c.s
 .PHONY : src/sugi_map.c.s
 
+src/sugi_mem.o: src/sugi_mem.c.o
+
+.PHONY : src/sugi_mem.o
+
+# target to build an object file
+src/sugi_mem.c.o:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_mem.c.o
+.PHONY : src/sugi_mem.c.o
+
+src/sugi_mem.i: src/sugi_mem.c.i
+
+.PHONY : src/sugi_mem.i
+
+# target to preprocess a source file
+src/sugi_mem.c.i:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_mem.c.i
+.PHONY : src/sugi_mem.c.i
+
+src/sugi_mem.s: src/sugi_mem.c.s
+
+.PHONY : src/sugi_mem.s
+
+# target to generate assembly for a file
+src/sugi_mem.c.s:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_mem.c.s
+.PHONY : src/sugi_mem.c.s
+
 src/sugi_render.o: src/sugi_render.c.o
 
 .PHONY : src/sugi_render.o
@@ -339,6 +366,33 @@ src/sugi_shaders.c.s:
 	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_shaders.c.s
 .PHONY : src/sugi_shaders.c.s
 
+src/sugi_term.o: src/sugi_term.c.o
+
+.PHONY : src/sugi_term.o
+
+# target to build an object file
+src/sugi_term.c.o:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_term.c.o
+.PHONY : src/sugi_term.c.o
+
+src/sugi_term.i: src/sugi_term.c.i
+
+.PHONY : src/sugi_term.i
+
+# target to preprocess a source file
+src/sugi_term.c.i:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_term.c.i
+.PHONY : src/sugi_term.c.i
+
+src/sugi_term.s: src/sugi_term.c.s
+
+.PHONY : src/sugi_term.s
+
+# target to generate assembly for a file
+src/sugi_term.c.s:
+	$(MAKE) -f CMakeFiles/sugi.dir/build.make CMakeFiles/sugi.dir/src/sugi_term.c.s
+.PHONY : src/sugi_term.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -366,12 +420,18 @@ help:
 	@echo "... src/sugi_map.o"
 	@echo "... src/sugi_map.i"
 	@echo "... src/sugi_map.s"
+	@echo "... src/sugi_mem.o"
+	@echo "... src/sugi_mem.i"
+	@echo "... src/sugi_mem.s"
 	@echo "... src/sugi_render.o"
 	@echo "... src/sugi_render.i"
 	@echo "... src/sugi_render.s"
 	@echo "... src/sugi_shaders.o"
 	@echo "... src/sugi_shaders.i"
 	@echo "... src/sugi_shaders.s"
+	@echo "... src/sugi_term.o"
+	@echo "... src/sugi_term.i"
+	@echo "... src/sugi_term.s"
 .PHONY : help
 
 

@@ -22,6 +22,7 @@ void sugi_call_update_internal(void)
 void sugi_call_draw_internal(void)
 { if (sugi_draw_func) sugi_draw_func(); }
 
+void sugi_core_null_fn (void) {}
 
 void sugi_core_run(void)
 {
@@ -29,6 +30,13 @@ void sugi_core_run(void)
     uint32_t sugi_time_step_ms = 1000 / 60;
     uint32_t sugi_delta_ticks  = 0;
 
+    printf("MEMORY TABLE\n");
+    printf("\tSTART\tEND\n");
+    printf("VRAM:\t0x%04x\t0x%04x\n", SUGI_MEM_SCREEN_PTR, SUGI_MEM_SCREEN_PTR + SUGI_MEM_SCREEN_SIZE - 1);
+    printf("STAT:\t0x%04x\t0x%04x\n", SUGI_MEM_SCREEN_PTR + SUGI_MEM_SCREEN_SIZE, SUGI_MEM_SPRSHEET_PTR - 1);
+    printf("SPRM:\t0x%04x\t0x%04x\n", SUGI_MEM_SPRSHEET_PTR, SUGI_MEM_SPRSHEET_PTR + SUGI_MEM_SPRSHEET_SIZE - 1);
+    printf("MAPM:\t0x%04x\t0x%04x\n", SUGI_MEM_MAPSHEET_PTR, SUGI_MEM_MAPSHEET_PTR + SUGI_MEM_MAPSHEET_SIZE - 1);
+    printf("Memory: %d bytes\n", SUGI_MEM_MAPSHEET_PTR + SUGI_MEM_MAPSHEET_SIZE);
 
     #pragma region INIT_SDL_GL
     // Initializing SDL
@@ -36,8 +44,8 @@ void sugi_core_run(void)
     SDL_Init(SDL_INIT_EVERYTHING);
     // Setting up OpenGL Attributes
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     // Setting Vsync
     SDL_GL_SetSwapInterval(SUGI_USE_VSYNC);
@@ -59,13 +67,12 @@ void sugi_core_run(void)
     SDL_SetWindowSize(sugi_main_window, SUGI_SCREEN_WIDTH, SUGI_SCREEN_HEIGHT);
     // Creating OpenGL context
     sugi_main_gl_context = SDL_GL_CreateContext(sugi_main_window);
+    // Initializing GLEW
+    glewInit();
     // Print some information
     printf("VSync: %d\n", SUGI_USE_VSYNC);
     printf("GL Context version: %d.%d\n", gl_major_version, gl_minor_version);
     printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-    // glewExperimental is probably needed to work on Windows
-    glewExperimental = GL_TRUE;
-    glewInit();
     /* Clearing GL context */
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -124,23 +131,34 @@ void sugi_core_run(void)
                     printf("Quit!\n\r");
                     break;
                 }
-                // Keyboard key donw and up events (currently used to control player 0)
+                // Text events
+                case SDL_TEXTINPUT:
+                {
+                    if (sugi_text_field_struct.active != SUGI_TEXTMODE_OFF)
+                        sugi_text_insert_str(sugi_sdl_event.text.text);
+                    break;
+                }
+                // Keypresses events
                 case SDL_KEYDOWN:
                 {
                     sugi_input_process_kb_press_state(kb_state);
-                    
-                    if (sugi_text_input_mode != 0)
+
+                    if (sugi_text_field_struct.active != SUGI_TEXTMODE_OFF)
                     {
-                        // text_input_mode
                         if (kb_state[SDL_SCANCODE_BACKSPACE])
-                        {
-                            sugi_text_target[strlen(sugi_text_target)-1] = '\0';
-                        }
+                            sugi_text_backspace_char();
+                        
+                        if (kb_state[SDL_SCANCODE_DELETE])
+                            sugi_text_delete_char();
 
                         if (kb_state[SDL_SCANCODE_RETURN])
-                        {
-                            strcat(sugi_text_target, "\n");
-                        }
+                            sugi_text_insert_str("\n");
+
+                        if (kb_state[SDL_SCANCODE_LEFT])
+                            sugi_text_move_cursor(-1);
+
+                        if (kb_state[SDL_SCANCODE_RIGHT])
+                            sugi_text_move_cursor(1);
                     }
                     break;
                 }
@@ -174,9 +192,27 @@ void sugi_core_run(void)
                     int32_t y = sugi_sdl_event.motion.y;
                     int32_t rx = (x - sugi_window_offset_x) / sugi_window_zoom;
                     int32_t ry = (y - sugi_window_offset_y) / sugi_window_zoom;
-                    // printf("SDL_MOUSEMOTION: {x:%d y:%d}, {rx:%d ry:%d}\n\r", x, y, rx, ry);
-                    sugi_mouse_x = rx;
-                    sugi_mouse_y = ry;
+
+                    uint8_t x_high = (rx >> 8) & 0xff;
+                    uint8_t x_low = rx & 0xff;
+                    if (x_high >= 128) 
+                    {
+                        x_high = 0;
+                        x_low = 0;
+                    }
+                    uint8_t y_high = (ry >> 8) & 0xff;
+                    uint8_t y_low = ry & 0xff;
+                    if (y_high >= 128) 
+                    {
+                        y_high = 0;
+                        y_low = 0;
+                    }
+
+                    *(sugi_memory + SUGI_MEM_CURSOR_LOW_PTR + 0) = rx & 0xff;
+                    *(sugi_memory + SUGI_MEM_CURSOR_LOW_PTR + 1) = ry & 0xff;
+                    *(sugi_memory + SUGI_MEM_CURSOR_LOW_PTR + 0) = (rx >> 8) & 0xff;
+                    *(sugi_memory + SUGI_MEM_CURSOR_LOW_PTR + 1) = (ry >> 8) & 0xff;
+
                     break;
                 }
                 // Joystick events
@@ -281,10 +317,7 @@ void sugi_core_run(void)
                     if (found)
                     {
                         printf("Controller button down! (j_id: %d, btn: %d, plr: %d, str: %s)\n\r",
-                                        j_id,
-                                        button,
-                                        i,
-                                        SDL_GameControllerGetStringForButton(button));
+                            j_id, button, i, SDL_GameControllerGetStringForButton(button));
                         sugi_input_process_controller_press_button(button, i);
                     }
                     break;
@@ -309,19 +342,9 @@ void sugi_core_run(void)
                     if (found)
                     {
                         printf("Controller button up! (j_id: %d, btn: %d, plr: %d, str: %s)\n\r",
-                                        j_id,
-                                        button,
-                                        i,
-                                        SDL_GameControllerGetStringForButton(button));
+                            j_id, button, i, SDL_GameControllerGetStringForButton(button));
                         sugi_input_process_controller_release_button(button, i);
                     }
-                    break;
-
-                }
-                case SDL_TEXTINPUT:
-                {
-                    if (sugi_text_input_mode != 0)
-                        strcat(sugi_text_target, sugi_sdl_event.text.text);
                     break;
                 }
                 default:
@@ -341,12 +364,6 @@ void sugi_core_run(void)
         // Rendering a screen
         sugi_renderer_draw_internal();
         
-        // for (int i = 0; i < 8; i++)
-        //     printf("%d", (*(sugi_memory + SUGI_MEM_BTNP_PTR + 0) >> i) & 0x1);
-        // printf("\t");
-        // for (int i = 0; i < 8; i++)
-        //     printf("%d", (*(sugi_memory + SUGI_MEM_BTN_PTR + 0) >> i) & 0x1);
-        // printf("\n\r");
         // Capping a game to 60 FPS
         uint32_t delay = sugi_time_step_ms - (SDL_GetTicks() - sugi_delta_ticks);
         delay = (delay > sugi_time_step_ms) ? sugi_time_step_ms : delay;

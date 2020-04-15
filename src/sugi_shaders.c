@@ -2,7 +2,7 @@
 #include "sugi_palette.h"
 
 
-const char *vert_shader_src[] = {
+const char *vert_shader_src[0x1ffff] = {
 	"\
 	#version 130\n\
 	\
@@ -14,7 +14,7 @@ const char *vert_shader_src[] = {
 };
 
 
-const char *frag_shader_src[] = {
+const char *frag_shader_src[0x1ffff] = {
 	"\
 	#version 130\n\
 	\

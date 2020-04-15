@@ -1,32 +1,32 @@
 #include "sugi.h"
 #include "math.h"
 
-void call_lua_tick();
-void call_lua_init();
-void test_draw();
-// global variables
-float t = 0;
-float fps = 0.0;
-int mx_last = 0;
-int my_last = 0;
-
-
-void call_lua_init(void)
+int main(int argc, char *argv[])
 {
-    // luaL_dofile(L, "lua/main.lua");
-    // lua_getglobal(L, "__init__");
-    // lua_call(L, 0, 0);
-    // lua_pop(L, 0);;
+    L = luaL_newstate();
+    luaL_openlibs(L);
+    luaopen_base(L);
+    luaopen_table(L);
+    luaopen_io(L);
+    luaopen_string(L);
+    luaopen_math(L);
+
+    sugi_lua_register();
+
+    sugi_core_set_init(sugi_core_null_fn);    // call_lua_init);
+    sugi_core_set_update(sugi_core_null_fn);  // call_lua_tick);
+    sugi_core_set_draw(sugi_core_null_fn);
+    // initialize terminal
+    sugi_term_init();
+    // start engine loop
+    sugi_core_run();
+    // close lua interpreter
+    lua_close(L);
+
+    return 0;
 }
 
-void call_lua_tick(void)
-{
-    // lua_getglobal(L, "__tick__");
-    // lua_call(L, 0, 0);
-    // lua_pop(L, 0);
-}
-
-
+/* 
 uint8_t test_text[10000];
 // Test draw function
 void test_draw()
@@ -83,6 +83,8 @@ void test_draw()
 
     uint8_t c00;
     sugi_gfx_sget(0, 0, &c00);
+
+    sugi_gfx_flip();
 
     sugi_gfx_clear(c00);
     
@@ -164,77 +166,5 @@ void test_draw()
 
     t+=1.0/60.0;
 }
+*/
 
-
-
-static int lua_print(lua_State *L)
-{
-    // define default values
-    char * s = "";
-    int32_t x = 0;
-    int32_t y = 0;
-    uint8_t c = sugi_gfx_getcolor(); 
-
-    // process arguments
-    if (lua_isstring(L, 1)) 
-    {
-        s = lua_tostring(L, 1);
-    }
-    else
-    {
-        if (lua_isnil(L, 1))
-        s = "nil";
-        if (lua_isboolean(L, 1))
-        s = lua_toboolean(L, 1) ? "true" : "false";
-        if (lua_istable(L, 1))
-        s = "table";
-    }
-
-    if (lua_isnumber(L, 2))
-        x = lua_tointeger(L, 2);
-    if (lua_isnumber(L, 3))
-        y = lua_tointeger(L, 3);
-    if (lua_isnumber(L, 4))
-        c = lua_tointeger(L, 4);
-    
-    // call sugi print function
-    sugi_gfx_print(s, x, y, c);
-    return 1;
-}
-
-
-static int lua_cls(lua_State *L)
-{
-    // process arguments
-    if (!lua_isnumber(L, 1))
-        sugi_gfx_clear_no_col();
-
-    // call sugi clear function
-    sugi_gfx_clear(lua_tointeger(L, 1));
-    return 1;
-}
-
-
-int main(int argc, char *argv[])
-{
-    L = luaL_newstate();
-
-    luaL_openlibs(L);
-    luaopen_base(L);
-    luaopen_table(L);
-    luaopen_io(L);
-    luaopen_string(L);
-    luaopen_math(L);
-
-    lua_register(L, "print", lua_print);
-    lua_register(L, "cls", lua_cls);
-
-    sugi_core_set_init(call_lua_init);
-    sugi_core_set_update(call_lua_tick);
-    sugi_core_set_draw(test_draw);
-    sugi_core_run();
-
-    lua_close(L);
-
-    return 0;
-}
