@@ -14,14 +14,14 @@ Build:
 
 ```
 git clone https://github.com/vbrydik/sugi
-cd sugi
-make setup
+mkdir build
+cmake ..
 make 
 ```
 
 Run:
 
 ```
-cd bin
-./exec
+cd build
+./sugi
 ```
