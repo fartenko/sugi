@@ -2,12 +2,16 @@
 
 A fantasy console inspired by pico8.
 
+## This repo is no longer maintained! 
+
+Spiritual successor: [sugi++](https://github.com/vbrydik/sugi++)
+
 ## Build from source
 
 Install needed dependencies (Ubuntu/Debian):
 
 ```
-sudo apt install libsdl2-dev libsdl2-ttf-dev libsdl2-2.0 libglew-dev libglew2.0 lua5.3 lua5.3-dev
+sudo apt install libsdl2-dev libglew-dev lua5.3 lua5.3-dev
 ```
 
 Build:
